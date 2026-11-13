@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Bharat Market Intelligence | AI-Powered Indian Stock Market Research",
@@ -32,9 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark h-full bg-[#0B0F19]">
-      <body className="h-full bg-[#0B0F19] text-gray-100 antialiased overflow-hidden">
-        {children}
+    <html lang="en" className="dark h-full">
+      <body className="h-full antialiased overflow-hidden transition-colors duration-200">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

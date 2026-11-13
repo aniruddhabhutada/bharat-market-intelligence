@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Activity, ShieldCheck, Clock, RefreshCw, Menu, Search } from "lucide-react";
+import { Activity, ShieldCheck, Clock, RefreshCw, Menu, Search, Sun, Moon } from "lucide-react";
 import { api } from "@/lib/api";
+import { useTheme } from "@/context/ThemeContext";
 
 interface HeaderProps {
   onOpenDataQuality: () => void;
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectStock,
   onToggleMobileMenu
 }) => {
+  const { theme, toggleTheme } = useTheme();
   const [marketStatus, setMarketStatus] = useState<any>(null);
   const [searchSymbol, setSearchSymbol] = useState("");
   const [timeStr, setTimeStr] = useState("");
@@ -132,6 +134,20 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="rounded bg-emerald-900/60 px-1 py-0.2 text-[10px] font-bold text-emerald-300">
             {qualityAudit?.overall_health || "100% VERIFIED"}
           </span>
+        </button>
+
+        {/* Light / Dark Mode Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-800 bg-gray-900 text-gray-300 transition hover:border-gray-700 hover:text-white"
+          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle Theme"
+        >
+          {theme === "dark" ? (
+            <Sun className="h-3.5 w-3.5 text-amber-400 transition-transform hover:rotate-45" />
+          ) : (
+            <Moon className="h-3.5 w-3.5 text-blue-500 transition-transform hover:-rotate-12" />
+          )}
         </button>
       </div>
     </header>

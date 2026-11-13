@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
+  :root,
+  [data-theme="dark"],
+  html.dark {
     --bg-main: #0b0f19;
     --bg-card: #111827;
     --bg-card-hover: #162032;
@@ -12,6 +14,20 @@
     --accent-blue: #3b82f6;
     --market-green: #10b981;
     --market-red: #ef4444;
+  }
+
+  [data-theme="light"],
+  html.light {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f1f5f9;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-blue: #2563eb;
+    --market-green: #16a34a;
+    --market-red: #dc2626;
   }
 }
 
@@ -28,14 +44,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
+  background: var(--border-color);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: var(--text-muted);
 }
 
 /* Pulse animation for Live Badge */
@@ -52,4 +68,164 @@ body {
 
 .animate-live-dot {
   animation: pulse-dot 1.8s infinite ease-in-out;
+}
+
+/* ========================================================
+   LIGHT MODE DESIGN SYSTEM OVERRIDES
+   ======================================================== */
+html.light,
+html.light body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Background remapping */
+html.light .bg-\[\#0B0F19\],
+html.light .bg-\[\#0b0f19\] {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-\[\#111827\] {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .bg-gray-900,
+html.light .bg-gray-900\/90,
+html.light .bg-gray-900\/80,
+html.light .bg-gray-900\/60,
+html.light .bg-gray-900\/50 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-gray-950,
+html.light .bg-gray-950\/80,
+html.light .bg-gray-950\/60 {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .bg-gray-800,
+html.light .bg-gray-800\/80,
+html.light .bg-gray-800\/60,
+html.light .bg-gray-800\/50 {
+  background-color: #e2e8f0 !important;
+}
+
+/* Border remapping */
+html.light .border-gray-800,
+html.light .border-gray-800\/60,
+html.light .border-gray-700,
+html.light .border-gray-700\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Typography remapping */
+html.light .text-gray-100,
+html.light .text-gray-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-gray-300,
+html.light .text-gray-400 {
+  color: #475569 !important;
+}
+
+html.light .text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Preserve White text for solid colored buttons */
+html.light .bg-blue-600,
+html.light .bg-blue-600 *,
+html.light .bg-emerald-600,
+html.light .bg-emerald-600 *,
+html.light .bg-red-600,
+html.light .bg-red-600 * {
+  color: #ffffff !important;
+}
+
+/* Hover effects */
+html.light .hover\:bg-gray-800:hover,
+html.light .hover\:bg-gray-700:hover,
+html.light .hover\:bg-\[\#162032\]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Header & Sidebar Light styling */
+html.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light aside {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Form Controls */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Market Badges */
+html.light .bg-emerald-950,
+html.light .bg-emerald-950\/80,
+html.light .bg-emerald-950\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+html.light .text-emerald-400 {
+  color: #16a34a !important;
+}
+
+html.light .bg-red-950,
+html.light .bg-red-950\/80,
+html.light .bg-red-950\/40 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+html.light .text-red-400 {
+  color: #dc2626 !important;
+}
+
+html.light .bg-amber-950,
+html.light .bg-amber-950\/80 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+html.light .text-amber-400,
+html.light .text-amber-300 {
+  color: #d97706 !important;
+}
+
+/* SVG Financial Charts in Light Mode */
+html.light svg line {
+  stroke: #e2e8f0 !important;
+}
+
+html.light svg text {
+  fill: #64748b !important;
+}
+
+/* Mobile Nav Bar in Light Mode */
+html.light nav.fixed {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Modals */
+html.light .bg-black\/70 {
+  background-color: rgba(15, 23, 42, 0.5) !important;
 }

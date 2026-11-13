@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart } from "lucide-react";
+import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart, Sun, Moon, Palette } from "lucide-react";
 import { api } from "@/lib/api";
+import { useTheme } from "@/context/ThemeContext";
 
 export const SettingsView: React.FC = () => {
+  const { theme, setTheme } = useTheme();
   const [settingsData, setSettingsData] = useState<any>(null);
   const [jobHistory, setJobHistory] = useState<any[]>([]);
   const [aiProvider, setAiProvider] = useState("rule_based");
@@ -86,8 +88,50 @@ export const SettingsView: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Col: AI & Scheduling Settings */}
+        {/* Left Col: Appearance, AI & Scheduling Settings */}
         <div className="space-y-4">
+          {/* Appearance & Theme Selector */}
+          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
+            <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
+              <Palette className="h-4 w-4 text-purple-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                Workstation Display Theme
+              </h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">
+              Choose your visual mode. High-contrast Light Mode is ideal for daylight, while Dark Mode provides the institutional terminal experience.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setTheme("dark")}
+                className={`flex flex-col items-center justify-center rounded-lg border p-3 text-xs font-semibold transition ${
+                  theme === "dark"
+                    ? "border-blue-500 bg-blue-950/40 text-blue-300 ring-1 ring-blue-500"
+                    : "border-gray-800 bg-gray-900/60 text-gray-400 hover:border-gray-700 hover:text-gray-200"
+                }`}
+              >
+                <Moon className="h-5 w-5 mb-1.5 text-blue-400" />
+                <span>Dark Terminal</span>
+                <span className="text-[10px] text-gray-500 font-normal mt-0.5">Obsidian Navy (Default)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTheme("light")}
+                className={`flex flex-col items-center justify-center rounded-lg border p-3 text-xs font-semibold transition ${
+                  theme === "light"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-600 ring-1 ring-blue-500"
+                    : "border-gray-800 bg-gray-900/60 text-gray-400 hover:border-gray-700 hover:text-gray-200"
+                }`}
+              >
+                <Sun className="h-5 w-5 mb-1.5 text-amber-500" />
+                <span>Light Executive</span>
+                <span className="text-[10px] text-gray-500 font-normal mt-0.5">High-Contrast White</span>
+              </button>
+            </div>
+          </div>
+
           {/* AI Settings Box */}
           <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
             <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
