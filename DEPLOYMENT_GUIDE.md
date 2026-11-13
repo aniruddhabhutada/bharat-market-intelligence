@@ -102,3 +102,4 @@ You can also run the backend on your own PC and view it on your phone or local n
 | `.gitignore` | Comprehensive rules excluding `.next`, `node_modules`, `venv`, DuckDB/SQLite data, and logs |
 | `frontend/src/lib/fallbackData.ts` | Complete offline snapshot ensuring 100% uptime on Netlify |
 | `frontend/src/lib/api.ts` | Dynamic environment URL resolution with auto-fallback |
+

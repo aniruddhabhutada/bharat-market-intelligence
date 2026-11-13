@@ -310,3 +310,4 @@ export function generateFallbackScreener(scanType: string, universe: string) {
     data_freshness: "LAST_AVAILABLE"
   };
 }
+
