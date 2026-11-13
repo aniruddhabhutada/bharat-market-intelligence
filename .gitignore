@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+ENV/
+
+# Node & Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Databases & local state (Keep schema / migrations, ignore generated data)
+data/*.db
+data/*.db-journal
+data/*.sqlite
+data/*.sqlite3
+data/historical/*.duckdb
+data/historical/*.duckdb.wal
+data/cache/
+*.duckdb
+*.duckdb.wal
+
+# Environment Variables & secrets (Do not commit live keys or credentials)
+.env
+.env.local
+.env.*.local
+frontend/.env
+frontend/.env.local
+!*.example
+
+# Logs & Temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Netlify & Vercel
+.netlify/
+frontend/.netlify/
+.vercel/
+
+# OS Files
+.DS_Store
+Thumbs.db

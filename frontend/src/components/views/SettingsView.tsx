@@ -1,0 +1,349 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart } from "lucide-react";
+import { api } from "@/lib/api";
+
+export const SettingsView: React.FC = () => {
+  const [settingsData, setSettingsData] = useState<any>(null);
+  const [jobHistory, setJobHistory] = useState<any[]>([]);
+  const [aiProvider, setAiProvider] = useState("rule_based");
+  const [geminiKey, setGeminiKey] = useState("");
+  const [saveStatus, setSaveStatus] = useState("");
+
+  // Backtest state
+  const [btSymbol, setBtSymbol] = useState("RELIANCE");
+  const [btStrategy, setBtStrategy] = useState("EMA_CROSSOVER");
+  const [btCapital, setBtCapital] = useState("100000");
+  const [btResult, setBtResult] = useState<any>(null);
+  const [btLoading, setBtLoading] = useState(false);
+
+  const loadSettingsAndJobs = async () => {
+    try {
+      const [sRes, jRes] = await Promise.all([
+        api.getSettings(),
+        api.getJobHistory()
+      ]);
+      setSettingsData(sRes);
+      setAiProvider(sRes.default_ai_provider || "rule_based");
+      setJobHistory(jRes);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    loadSettingsAndJobs();
+  }, []);
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaveStatus("Saving...");
+    try {
+      await api.updateSettings({
+        default_ai_provider: aiProvider,
+        gemini_api_key: geminiKey
+      });
+      setSaveStatus("Settings saved successfully.");
+      setTimeout(() => setSaveStatus(""), 3000);
+      loadSettingsAndJobs();
+    } catch (e) {
+      setSaveStatus("Failed to save settings.");
+    }
+  };
+
+  const handleRunBacktest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBtLoading(true);
+    try {
+      const res = await api.runBacktest({
+        symbol: btSymbol.trim().toUpperCase(),
+        strategy: btStrategy,
+        initial_capital: parseFloat(btCapital),
+        days: 300
+      });
+      setBtResult(res);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setBtLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-4 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="border-b border-gray-800 pb-3">
+        <div className="flex items-center space-x-2">
+          <Settings className="h-5 w-5 text-blue-400" />
+          <h1 className="text-base font-bold uppercase tracking-wider text-gray-100">
+            Platform Settings & Quantitative Backtesting Lab
+          </h1>
+        </div>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Configure offline deterministic AI models, scheduler intervals, and simulate technical strategies with Indian cost friction.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Col: AI & Scheduling Settings */}
+        <div className="space-y-4">
+          {/* AI Settings Box */}
+          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
+            <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
+              <Cpu className="h-4 w-4 text-blue-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                Interchangeable AI Research Provider
+              </h3>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="space-y-3 text-xs">
+              <div>
+                <label className="text-gray-400 font-semibold">Active AI Engine</label>
+                <select
+                  value={aiProvider}
+                  onChange={(e) => setAiProvider(e.target.value)}
+                  className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-2 text-gray-200 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="rule_based">Rule-Based Deterministic Analyst (100% Offline, Zero API Key)</option>
+                  <option value="gemini">Google Gemini Free-Tier (User API Key)</option>
+                  <option value="ollama">Local Ollama LLM (Offline llama3.2)</option>
+                </select>
+                <p className="text-[10px] text-gray-500 mt-1">
+                  * Note: The platform operates completely without an AI key. AI provides qualitative explanations of verified calculations.
+                </p>
+              </div>
+
+              {aiProvider === "gemini" && (
+                <div>
+                  <label className="text-gray-400 font-semibold">Google Gemini API Key (Optional)</label>
+                  <input
+                    type="password"
+                    placeholder="Enter your free-tier Gemini API key..."
+                    value={geminiKey}
+                    onChange={(e) => setGeminiKey(e.target.value)}
+                    className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-2 text-gray-200 focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-2">
+                {saveStatus && (
+                  <span className="text-xs font-semibold text-emerald-400">{saveStatus}</span>
+                )}
+                <button
+                  type="submit"
+                  className="rounded bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition ml-auto"
+                >
+                  Save Configuration
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Scheduled Cycles & Timings */}
+          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
+            <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
+              <Clock className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                Automated Indian Market Schedule (Asia/Kolkata)
+              </h3>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between items-center rounded bg-gray-900/60 p-2 border border-gray-800">
+                <span className="text-gray-300 font-medium">Morning Pre-Market Cycle</span>
+                <span className="font-mono font-bold text-amber-400">08:30 IST</span>
+              </div>
+              <div className="flex justify-between items-center rounded bg-gray-900/60 p-2 border border-gray-800">
+                <span className="text-gray-300 font-medium">Intraday Monitoring Window</span>
+                <span className="font-mono font-bold text-emerald-400">09:15 - 15:30 IST (Every 15m)</span>
+              </div>
+              <div className="flex justify-between items-center rounded bg-gray-900/60 p-2 border border-gray-800">
+                <span className="text-gray-300 font-medium">Evening Post-Market Research</span>
+                <span className="font-mono font-bold text-indigo-400">15:45 - 21:00 IST</span>
+              </div>
+              <div className="flex justify-between items-center rounded bg-gray-900/60 p-2 border border-gray-800">
+                <span className="text-gray-300 font-medium">Daily Screener Auto-Scan</span>
+                <span className="font-mono font-bold text-blue-400">18:00 IST</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Job History */}
+          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
+            <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
+              <History className="h-4 w-4 text-indigo-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                Recent Scheduled Job Runs
+              </h3>
+            </div>
+
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {jobHistory.length === 0 ? (
+                <p className="text-xs text-gray-500 italic">No job history recorded yet.</p>
+              ) : (
+                jobHistory.map((j) => (
+                  <div
+                    key={j.id}
+                    className="flex items-center justify-between rounded bg-gray-900/60 p-2 text-xs border border-gray-800"
+                  >
+                    <div>
+                      <span className="font-semibold text-gray-200">{j.job_name}</span>
+                      <p className="text-[10px] text-gray-500">{j.run_time}</p>
+                    </div>
+                    <span
+                      className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                        j.status === "SUCCESS"
+                          ? "bg-emerald-950 text-emerald-400"
+                          : j.status === "SKIPPED"
+                          ? "bg-gray-800 text-gray-400"
+                          : "bg-red-950 text-red-400"
+                      }`}
+                    >
+                      {j.status}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Col: Quantitative Strategy Backtesting Simulator */}
+        <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow space-y-4">
+          <div className="flex items-center space-x-2 border-b border-gray-800 pb-2">
+            <BarChart className="h-4 w-4 text-emerald-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+              Indian Equity Strategy Backtesting Simulator
+            </h3>
+          </div>
+
+          <form onSubmit={handleRunBacktest} className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label className="text-gray-400 font-semibold">Stock Symbol</label>
+              <input
+                type="text"
+                value={btSymbol}
+                onChange={(e) => setBtSymbol(e.target.value)}
+                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-gray-200 font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-gray-400 font-semibold">Strategy Model</label>
+              <select
+                value={btStrategy}
+                onChange={(e) => setBtStrategy(e.target.value)}
+                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-gray-200"
+              >
+                <option value="EMA_CROSSOVER">EMA 9 / 20 Crossover</option>
+                <option value="RSI_MOMENTUM">RSI 14 Momentum Shift</option>
+                <option value="SUPERTREND_TREND">Supertrend (10, 3) Trend Follow</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-gray-400 font-semibold">Initial Capital (₹)</label>
+              <input
+                type="number"
+                value={btCapital}
+                onChange={(e) => setBtCapital(e.target.value)}
+                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-gray-200 font-mono"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                disabled={btLoading}
+                className="w-full flex items-center justify-center space-x-1.5 rounded bg-emerald-600 p-2 text-xs font-semibold text-white hover:bg-emerald-500 transition"
+              >
+                <Play className="h-3.5 w-3.5" />
+                <span>{btLoading ? "Simulating..." : "Execute Simulation"}</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Backtest Results */}
+          {btResult && (
+            <div className="space-y-3 border-t border-gray-800 pt-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                <div className="rounded bg-gray-900 p-2">
+                  <span className="text-[10px] text-gray-500">Net Return</span>
+                  <p
+                    className={`font-mono font-bold mt-0.5 ${
+                      btResult.net_return_pct >= 0 ? "text-emerald-400" : "text-red-400"
+                    }`}
+                  >
+                    {btResult.net_return_pct > 0 ? "+" : ""}{btResult.net_return_pct}%
+                  </p>
+                </div>
+                <div className="rounded bg-gray-900 p-2">
+                  <span className="text-[10px] text-gray-500">Win Rate</span>
+                  <p className="font-mono font-bold text-gray-200 mt-0.5">{btResult.win_rate_pct}%</p>
+                </div>
+                <div className="rounded bg-gray-900 p-2">
+                  <span className="text-[10px] text-gray-500">Profit Factor</span>
+                  <p className="font-mono font-bold text-blue-400 mt-0.5">{btResult.profit_factor}</p>
+                </div>
+                <div className="rounded bg-gray-900 p-2">
+                  <span className="text-[10px] text-gray-500">Max Drawdown</span>
+                  <p className="font-mono font-bold text-red-400 mt-0.5">-{btResult.max_drawdown_pct}%</p>
+                </div>
+              </div>
+
+              {/* Statutory Indian Cost Modeling Note */}
+              <div className="rounded bg-gray-900/60 p-2.5 text-[10px] text-gray-400 border border-gray-800 space-y-1">
+                <p className="font-bold text-gray-300">
+                  Indian Cost Modeling Applied: ₹40 Brokerage + 0.1% STT + NSE Turnover + Stamp Duty + 18% GST + Slippage
+                </p>
+                <p className="text-gray-500">
+                  Sample round-trip friction cost on 40 shares: ₹{btResult.cost_breakdown_sample?.total_friction_cost}
+                </p>
+              </div>
+
+              {/* Recent Trade History */}
+              <div>
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                  Executed Simulated Trades ({btResult.total_trades} Total)
+                </h4>
+                <div className="max-h-48 overflow-y-auto rounded border border-gray-800">
+                  <table className="w-full text-left text-[11px] font-mono">
+                    <thead className="bg-gray-900 text-gray-400">
+                      <tr>
+                        <th className="p-1.5">Entry Date</th>
+                        <th className="p-1.5">Exit Date</th>
+                        <th className="p-1.5 text-right">Entry</th>
+                        <th className="p-1.5 text-right">Exit</th>
+                        <th className="p-1.5 text-right">Net P&L (₹)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-800">
+                      {(btResult.trades || []).slice(-6).map((t: any, idx: number) => {
+                        const win = t.net_pnl > 0;
+                        return (
+                          <tr key={idx} className="hover:bg-gray-800/40">
+                            <td className="p-1.5 text-gray-400">{t.entry_date}</td>
+                            <td className="p-1.5 text-gray-400">{t.exit_date}</td>
+                            <td className="p-1.5 text-right text-gray-300">₹{t.entry_price}</td>
+                            <td className="p-1.5 text-right text-gray-300">₹{t.exit_price}</td>
+                            <td
+                              className={`p-1.5 text-right font-bold ${
+                                win ? "text-emerald-400" : "text-red-400"
+                              }`}
+                            >
+                              {win ? "+" : ""}₹{t.net_pnl}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
