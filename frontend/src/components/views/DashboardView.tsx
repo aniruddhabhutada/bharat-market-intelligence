@@ -285,6 +285,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
           </div>
         </div>
       </div>
+
+      {/* Platform Attribution Footer */}
+      <footer className="mt-8 border-t border-gray-800/80 pt-4 pb-2 text-center text-xs text-gray-400">
+        <p className="flex items-center justify-center space-x-1.5">
+          <span>Bharat Market Intelligence</span>
+          <span>•</span>
+          <span>Made with</span>
+          <span className="text-red-500">❤️</span>
+          <span>by</span>
+          <strong className="text-gray-200 font-semibold hover:text-blue-400 transition">Aniruddha Bhutada</strong>
+        </p>
+        <p className="text-[10px] text-gray-500 mt-1">
+          Free & Open-Source Indian Equity Research Terminal for NSE & BSE
+        </p>
+      </footer>
     </div>
   );
 };

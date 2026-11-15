@@ -79,9 +79,14 @@ export const Header: React.FC<HeaderProps> = ({
           <Menu className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-bold tracking-wider text-blue-500">BHARAT</span>
-          <span className="text-xs font-medium text-gray-400">MARKET INTEL</span>
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-1.5">
+            <span className="text-sm font-bold tracking-wider text-blue-500">BHARAT</span>
+            <span className="text-xs font-medium text-gray-400">MARKET INTEL</span>
+          </div>
+          <span className="hidden sm:inline text-[9px] text-gray-400 font-normal">
+            by <strong className="text-gray-300 font-semibold">Aniruddha Bhutada</strong>
+          </span>
         </div>
 
         {/* Live IST Clock */}

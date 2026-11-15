@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description:
     "Institutional-grade equity research terminal for NSE & BSE India. Pre-market intelligence, intraday monitoring, multi-factor stock screener, and 100% verified financials.",
   applicationName: "Bharat Market Intelligence",
+  authors: [{ name: "Aniruddha Bhutada", url: "https://github.com/aniruddhabhutada" }],
+  creator: "Aniruddha Bhutada",
   keywords: [
     "NSE",
     "BSE",

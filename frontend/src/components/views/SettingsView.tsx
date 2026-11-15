@@ -488,6 +488,20 @@ export const SettingsView: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* About Project & Author Card */}
+      <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow text-center">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+          Bharat Market Intelligence
+        </h3>
+        <p className="text-xs text-gray-300 mt-1">
+          Architected, Engineered & Developed with <span className="text-red-500">❤️</span> by{" "}
+          <strong className="text-blue-400 font-semibold">Aniruddha Bhutada</strong>
+        </p>
+        <p className="text-[11px] text-gray-500 mt-1">
+          Open-Source Institutional Equity Research Platform • NSE & BSE India
+        </p>
+      </div>
     </div>
   );
 };

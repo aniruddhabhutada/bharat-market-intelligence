@@ -136,11 +136,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* Footer Regulatory / Integrity Note */}
-        <div className="border-t border-gray-800 p-3">
-          <div className="rounded bg-gray-900/80 p-2 text-[10px] text-gray-400">
-            <p className="font-semibold text-gray-300">Verified Exchange Feeds</p>
-            <p className="mt-0.5 text-gray-500">100% Free & Open Architecture</p>
+        {/* Footer Attribution & Integrity Note */}
+        <div className="border-t border-gray-800 p-3 space-y-2">
+          <div className="rounded bg-gray-900/80 p-2 text-[10px] text-gray-400 border border-gray-800/60">
+            <div className="flex items-center space-x-1 font-medium text-gray-300">
+              <span>Made with</span>
+              <span className="text-red-500">❤️</span>
+              <span>by</span>
+              <strong className="text-blue-400 font-semibold">Aniruddha Bhutada</strong>
+            </div>
+            <p className="mt-1 text-[9px] text-gray-500">
+              100% Free & Open Indian Equity Terminal
+            </p>
           </div>
         </div>
       </aside>
