@@ -10,14 +10,14 @@ export const FALLBACK_DATA: Record<string, any> = {
   },
 
   "/indices": [
-    { name: "NIFTY 50", symbol: "NIFTY", exchange: "NSE", price: 24245.50, change: 88.20, pct_change: 0.37, open: 24190.0, high: 24295.0, low: 24160.0, previous_close: 24157.30, status: "LAST AVAILABLE" },
-    { name: "BANK NIFTY", symbol: "BANKNIFTY", exchange: "NSE", price: 52140.00, change: 210.50, pct_change: 0.41, open: 51980.0, high: 52280.0, low: 51920.0, previous_close: 51929.50, status: "LAST AVAILABLE" },
-    { name: "BSE SENSEX", symbol: "SENSEX", exchange: "BSE", price: 79820.00, change: 275.00, pct_change: 0.35, open: 79650.0, high: 79980.0, low: 79540.0, previous_close: 79545.00, status: "LAST AVAILABLE" },
-    { name: "INDIA VIX", symbol: "INDIAVIX", exchange: "NSE", price: 13.40, change: -0.32, pct_change: -2.33, open: 13.72, high: 13.90, low: 13.25, previous_close: 13.72, status: "LAST AVAILABLE" },
-    { name: "NIFTY IT", symbol: "NIFTYIT", exchange: "NSE", price: 42350.00, change: 145.00, pct_change: 0.34, open: 42250.0, high: 42480.0, low: 42180.0, previous_close: 42205.00, status: "LAST AVAILABLE" },
-    { name: "NIFTY AUTO", symbol: "NIFTYAUTO", exchange: "NSE", price: 23910.00, change: 185.00, pct_change: 0.78, open: 23780.0, high: 23990.0, low: 23750.0, previous_close: 23725.00, status: "LAST AVAILABLE" },
-    { name: "NIFTY PHARMA", symbol: "NIFTYPHARMA", exchange: "NSE", price: 22890.00, change: 95.00, pct_change: 0.42, open: 22820.0, high: 22940.0, low: 22790.0, previous_close: 22795.00, status: "LAST AVAILABLE" },
-    { name: "NIFTY FMCG", symbol: "NIFTYFMCG", exchange: "NSE", price: 58450.00, change: -110.00, pct_change: -0.19, open: 58600.0, high: 58680.0, low: 58390.0, previous_close: 58560.00, status: "LAST AVAILABLE" }
+    { name: "NIFTY 50", symbol: "NIFTY", exchange: "NSE", price: 25144.30, change: -155.05, pct_change: -0.61, open: 25209.85, high: 25246.35, low: 25054.40, previous_close: 25299.35, status: "LAST AVAILABLE" },
+    { name: "BANK NIFTY", symbol: "BANKNIFTY", exchange: "NSE", price: 61034.10, change: -484.40, pct_change: -0.79, open: 61300.55, high: 61300.55, low: 60780.55, previous_close: 61518.50, status: "LAST AVAILABLE" },
+    { name: "BSE SENSEX", symbol: "SENSEX", exchange: "BSE", price: 81592.45, change: -318.55, pct_change: -0.39, open: 81833.78, high: 81879.51, low: 81288.75, previous_close: 81911.01, status: "LAST AVAILABLE" },
+    { name: "INDIA VIX", symbol: "INDIAVIX", exchange: "NSE", price: 15.50, change: -1.12, pct_change: -6.74, open: 16.62, high: 16.88, low: 15.30, previous_close: 16.62, status: "LAST AVAILABLE" },
+    { name: "NIFTY IT", symbol: "NIFTYIT", exchange: "NSE", price: 31931.15, change: -232.40, pct_change: -0.72, open: 32082.75, high: 32387.75, low: 31806.30, previous_close: 32163.55, status: "LAST AVAILABLE" },
+    { name: "NIFTY AUTO", symbol: "NIFTYAUTO", exchange: "NSE", price: 27929.85, change: -301.15, pct_change: -1.07, open: 28123.10, high: 28157.95, low: 27846.95, previous_close: 28231.00, status: "LAST AVAILABLE" },
+    { name: "NIFTY PHARMA", symbol: "NIFTYPHARMA", exchange: "NSE", price: 28535.75, change: -140.00, pct_change: -0.49, open: 28598.60, high: 28902.45, low: 28452.40, previous_close: 28675.75, status: "LAST AVAILABLE" },
+    { name: "NIFTY FMCG", symbol: "NIFTYFMCG", exchange: "NSE", price: 46833.55, change: -4.95, pct_change: -0.01, open: 46808.30, high: 46998.75, low: 46543.70, previous_close: 46838.50, status: "LAST AVAILABLE" }
   ],
 
   "/fii-dii": {
@@ -195,7 +195,7 @@ export function generateFallbackChart(symbol: string, days = 60) {
 }
 
 export function generateFallbackStock(symbol: string) {
-  const p = symbol.includes("TCS") ? 3890.0 : symbol.includes("HDFC") ? 1725.0 : 2510.5;
+  const p = symbol.includes("TCS") ? 4150.0 : symbol.includes("HDFC") ? 1760.0 : symbol.includes("INFY") ? 1880.0 : 1339.7;
   return {
     symbol,
     company_name: `${symbol} Limited`,

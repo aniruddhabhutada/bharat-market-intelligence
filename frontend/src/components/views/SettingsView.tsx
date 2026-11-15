@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart, Sun, Moon, Palette } from "lucide-react";
-import { api } from "@/lib/api";
+import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart, Sun, Moon, Palette, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import { api, getApiBase, DEFAULT_CLOUD_API } from "@/lib/api";
 import { useTheme } from "@/context/ThemeContext";
 
 export const SettingsView: React.FC = () => {
@@ -12,6 +12,11 @@ export const SettingsView: React.FC = () => {
   const [aiProvider, setAiProvider] = useState("rule_based");
   const [geminiKey, setGeminiKey] = useState("");
   const [saveStatus, setSaveStatus] = useState("");
+
+  // Backend connection state
+  const [apiUrl, setApiUrl] = useState("");
+  const [apiTestStatus, setApiTestStatus] = useState<"IDLE" | "TESTING" | "SUCCESS" | "ERROR">("IDLE");
+  const [apiLatency, setApiLatency] = useState<number | null>(null);
 
   // Backtest state
   const [btSymbol, setBtSymbol] = useState("RELIANCE");
@@ -36,7 +41,38 @@ export const SettingsView: React.FC = () => {
 
   useEffect(() => {
     loadSettingsAndJobs();
+    setApiUrl(getApiBase());
   }, []);
+
+  const handleTestApi = async () => {
+    setApiTestStatus("TESTING");
+    const start = performance.now();
+    try {
+      const target = apiUrl.replace(/\/+$/, "");
+      const res = await fetch(`${target}/health`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        setApiLatency(Math.round(performance.now() - start));
+        setApiTestStatus("SUCCESS");
+      } else {
+        setApiTestStatus("ERROR");
+      }
+    } catch (e) {
+      setApiTestStatus("ERROR");
+    }
+  };
+
+  const handleSaveApiUrl = () => {
+    if (apiUrl) {
+      localStorage.setItem("bmi_api_url", apiUrl.trim());
+      window.location.reload();
+    }
+  };
+
+  const handleResetApiUrl = () => {
+    localStorage.removeItem("bmi_api_url");
+    setApiUrl(DEFAULT_CLOUD_API);
+    window.location.reload();
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +124,73 @@ export const SettingsView: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Col: Appearance, AI & Scheduling Settings */}
+        {/* Left Col: Connection, Appearance, AI & Scheduling Settings */}
         <div className="space-y-4">
+          {/* Backend Data Engine & Cloud API Connection */}
+          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
+            <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
+              <Globe className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                Backend Data Engine & Cloud API Connection
+              </h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">
+              Live Indian market data (NSE/BSE quotes, DuckDB time-series, and technical indicators) are fetched from this FastAPI endpoint.
+            </p>
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="text-gray-400 font-semibold">Active Backend URL</label>
+                <div className="flex space-x-2 mt-1">
+                  <input
+                    type="text"
+                    value={apiUrl}
+                    onChange={(e) => setApiUrl(e.target.value)}
+                    placeholder="https://bharat-market-intelligence.onrender.com/api"
+                    className="flex-1 rounded bg-gray-900 border border-gray-800 p-2 text-gray-200 font-mono text-[11px] focus:outline-none focus:border-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleTestApi}
+                    className="rounded border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-gray-700 transition"
+                  >
+                    {apiTestStatus === "TESTING" ? "Testing..." : "Test"}
+                  </button>
+                </div>
+              </div>
+
+              {apiTestStatus === "SUCCESS" && (
+                <div className="flex items-center space-x-1.5 text-emerald-400 font-medium">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Connected! Backend is healthy and responding ({apiLatency}ms).</span>
+                </div>
+              )}
+
+              {apiTestStatus === "ERROR" && (
+                <div className="flex items-center space-x-1.5 text-amber-400 font-medium">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>Backend not responding. Render may be waking up (wait 30s) or check URL.</span>
+                </div>
+              )}
+
+              <div className="flex space-x-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleSaveApiUrl}
+                  className="rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition"
+                >
+                  Save & Apply
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetApiUrl}
+                  className="rounded border border-gray-800 bg-gray-900 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 transition"
+                >
+                  Reset to Default Cloud
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Appearance & Theme Selector */}
           <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
             <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
