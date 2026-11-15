@@ -52,7 +52,7 @@ export default function Home() {
         />
 
         {/* Dynamic View Container */}
-        <main className="flex-1 overflow-y-auto pb-16 md:pb-6">
+        <main className="flex-1 overflow-y-auto pb-24 md:pb-6">
           {currentView === "dashboard" && (
             <DashboardView
               onSelectStock={handleSelectStock}
