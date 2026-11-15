@@ -56,7 +56,7 @@ export const PremarketView: React.FC = () => {
         </button>
       </div>
 
-      {/* Global & Macro Cards */}
+      {/* Global & Macro Cards (Linear / Coinbase Glassmorphic Cards) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
           { label: "BRENT CRUDE", val: macros.CRUDE_OIL?.value ? `$${macros.CRUDE_OIL.value}` : "$74.20", pct: macros.CRUDE_OIL?.pct_change || -0.4, icon: Fuel },
@@ -68,14 +68,14 @@ export const PremarketView: React.FC = () => {
           const Icon = item.icon;
           const isPos = item.pct >= 0;
           return (
-            <div key={idx} className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
+            <div key={idx} className="glass-card glass-card-hover rounded-2xl p-3.5 shadow-lg">
               <div className="flex items-center justify-between text-xs text-gray-400">
-                <span className="font-semibold text-[10px] tracking-wider">{item.label}</span>
-                <Icon className="h-3.5 w-3.5 text-gray-500" />
+                <span className="font-bold text-[10px] tracking-wider text-gray-300">{item.label}</span>
+                <Icon className="h-3.5 w-3.5 text-blue-400" />
               </div>
-              <div className="mt-1 flex items-baseline justify-between">
-                <span className="font-mono font-bold text-sm text-gray-200">{item.val}</span>
-                <span className={`text-[11px] font-mono font-semibold ${isPos ? "text-emerald-400" : "text-red-400"}`}>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="font-mono font-black text-base text-gray-100">{item.val}</span>
+                <span className={`text-[11px] font-mono font-bold ${isPos ? "text-emerald-400" : "text-red-400"}`}>
                   {isPos ? `+${item.pct}%` : `${item.pct}%`}
                 </span>
               </div>
@@ -86,12 +86,12 @@ export const PremarketView: React.FC = () => {
 
       {/* AI & Research Analyst Briefing */}
       {aiNarrative && (
-        <div className="rounded-lg border border-blue-900/50 bg-[#111827] p-4 shadow">
-          <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 mb-3">
-            <span className="rounded bg-blue-600/30 px-2 py-0.5 text-[10px] font-bold text-blue-300">
+        <div className="glass-card rounded-2xl p-4 sm:p-5 shadow-xl border-l-4 border-l-blue-500">
+          <div className="flex items-center space-x-2 border-b border-gray-800 pb-2.5 mb-3">
+            <span className="rounded-full bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 text-[10px] font-bold text-blue-400">
               {report?.ai_synthesis?.model || "RULE-BASED DETERMINISTIC ANALYST"}
             </span>
-            <span className="text-[11px] text-gray-400">
+            <span className="text-[11px] text-gray-400 font-medium">
               Verified Evidence-Backed Synthesis | Prompt v1.0
             </span>
           </div>
@@ -103,18 +103,18 @@ export const PremarketView: React.FC = () => {
 
       {/* Scenarios Framework: Bullish, Bearish, Neutral */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/20 p-3.5">
-          <div className="flex items-center space-x-2 text-emerald-400 mb-2 font-bold text-xs">
+        <div className="glass-card rounded-2xl border-emerald-900/40 bg-emerald-950/15 p-4">
+          <div className="flex items-center space-x-2 text-emerald-400 mb-2 font-bold text-xs tracking-wide">
             <TrendingUp className="h-4 w-4" />
             <span>BULLISH SCENARIO</span>
           </div>
-          <p className="text-xs text-gray-300 leading-relaxed">
+          <p className="text-xs text-gray-300 leading-relaxed font-normal">
             {scenarios.bullish_scenario || "Sustained trade above opening range targets continuation towards swing resistance."}
           </p>
         </div>
 
-        <div className="rounded-lg border border-red-900/60 bg-red-950/20 p-3.5">
-          <div className="flex items-center space-x-2 text-red-400 mb-2 font-bold text-xs">
+        <div className="glass-card rounded-2xl border-red-900/40 bg-red-950/15 p-4">
+          <div className="flex items-center space-x-2 text-red-400 mb-2 font-bold text-xs tracking-wide">
             <TrendingDown className="h-4 w-4" />
             <span>BEARISH SCENARIO</span>
           </div>

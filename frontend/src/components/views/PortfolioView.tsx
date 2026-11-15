@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Briefcase, Plus, Trash2, ArrowUpRight, ArrowDownRight, RefreshCw, PieChart, ShieldCheck } from "lucide-react";
+import { Briefcase, Plus, Trash2, ArrowUpRight, ArrowDownRight, RefreshCw, PieChart, ShieldCheck, Wallet, IndianRupee } from "lucide-react";
 import { api } from "@/lib/api";
 
 export const PortfolioView: React.FC = () => {
@@ -56,105 +56,119 @@ export const PortfolioView: React.FC = () => {
 
   const positions = portfolioData?.positions || [];
   const summary = portfolioData?.summary || {};
-  const isPos = summary.total_unrealized_pnl >= 0;
+  const isPos = (summary.total_unrealized_pnl || 0) >= 0;
 
   return (
-    <div className="space-y-4 p-4 max-w-7xl mx-auto">
+    <div className="space-y-5 p-3 sm:p-5 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-800 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <Briefcase className="h-5 w-5 text-emerald-400" />
-            <h1 className="text-base font-bold uppercase tracking-wider text-gray-100">
-              Personal Portfolio & Holdings Tracker
-            </h1>
+          <div className="flex items-center space-x-2.5">
+            <div className="h-8 w-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Briefcase className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                  Personal Equity Portfolio & Real-time Tracker
+                </h1>
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  CLIENT-SIDE SECURE
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Zero broker credentials needed. Live P&L recalculated continuously from official NSE market feeds.
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Strictly local-first. No broker passwords or API token sharing required.
-          </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center space-x-1 rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition"
+            className="flex items-center space-x-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-2 text-xs font-semibold text-white transition active:scale-95 shadow-lg shadow-blue-500/20"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Add Position</span>
+            <span>Add Holding</span>
           </button>
           <button
             onClick={loadPortfolio}
             disabled={loading}
-            className="rounded bg-gray-800 p-1.5 text-gray-300 hover:text-white"
+            className="rounded-xl border border-white/[0.08] bg-gray-900/60 p-2 text-gray-300 hover:text-white transition active:scale-95"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin text-blue-400" : ""}`} />
           </button>
         </div>
       </div>
 
-      {/* Add Position Modal/Form */}
+      {/* Add Position Form Drawer */}
       {showAddForm && (
-        <form onSubmit={handleAddPosition} className="rounded-lg border border-gray-800 bg-[#111827] p-4 space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-300">
-            Log New Stock Holding
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <form onSubmit={handleAddPosition} className="glass-card rounded-2xl border border-white/[0.1] p-4 sm:p-5 space-y-4 shadow-2xl animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+              Log New Equity Holding
+            </h3>
+            <span className="text-[10px] text-gray-400">Stored in local browser SQLite</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
-              <label className="text-[10px] text-gray-400">NSE Symbol</label>
+              <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">NSE Symbol</label>
               <input
                 type="text"
                 placeholder="e.g. RELIANCE"
                 value={symbol}
                 onChange={(e) => setSymbol(e.target.value)}
-                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-xs text-gray-200"
+                className="w-full mt-1 rounded-xl bg-gray-950/70 border border-white/[0.1] p-2 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500 font-mono"
                 required
               />
             </div>
             <div>
-              <label className="text-[10px] text-gray-400">Buy Price (₹)</label>
+              <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Avg Buy Price (₹)</label>
               <input
                 type="number"
                 step="0.05"
                 placeholder="2500.0"
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-xs text-gray-200"
+                className="w-full mt-1 rounded-xl bg-gray-950/70 border border-white/[0.1] p-2 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500 font-mono"
                 required
               />
             </div>
             <div>
-              <label className="text-[10px] text-gray-400">Quantity</label>
+              <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Quantity (Shares)</label>
               <input
                 type="number"
                 placeholder="50"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-xs text-gray-200"
+                className="w-full mt-1 rounded-xl bg-gray-950/70 border border-white/[0.1] p-2 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500 font-mono"
                 required
               />
             </div>
             <div>
-              <label className="text-[10px] text-gray-400">Sector</label>
+              <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Industry Sector</label>
               <input
                 type="text"
-                placeholder="e.g. Banking"
+                placeholder="e.g. Energy / IT"
                 value={sector}
                 onChange={(e) => setSector(e.target.value)}
-                className="w-full mt-1 rounded bg-gray-900 border border-gray-800 p-1.5 text-xs text-gray-200"
+                className="w-full mt-1 rounded-xl bg-gray-950/70 border border-white/[0.1] p-2 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
-          <div className="flex justify-end space-x-2 pt-1">
+
+          <div className="flex justify-end space-x-2 pt-2 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="rounded bg-gray-800 px-3 py-1 text-xs text-gray-400 hover:text-white"
+              className="rounded-xl border border-white/[0.08] bg-gray-900/60 px-3.5 py-1.5 text-xs text-gray-400 hover:text-white transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-500"
+              className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition active:scale-95"
             >
               Save Holding
             </button>
@@ -163,85 +177,102 @@ export const PortfolioView: React.FC = () => {
       )}
 
       {/* Portfolio Summary Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
-          <span className="text-[10px] text-gray-500 uppercase">Invested Capital</span>
-          <p className="font-mono font-bold text-base text-gray-200 mt-0.5">
-            ₹{summary.total_invested?.toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Invested Capital</span>
+          <p className="font-mono font-bold text-lg text-gray-200 mt-1 tabular-nums">
+            ₹{summary.total_invested ? Number(summary.total_invested).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
           </p>
         </div>
-        <div className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
-          <span className="text-[10px] text-gray-500 uppercase">Current Valuation</span>
-          <p className="font-mono font-bold text-base text-gray-100 mt-0.5">
-            ₹{summary.total_current_value?.toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}
+
+        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Current Valuation</span>
+          <p className="font-mono font-bold text-lg text-gray-100 mt-1 tabular-nums">
+            ₹{summary.total_current_value ? Number(summary.total_current_value).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
           </p>
         </div>
-        <div className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
-          <span className="text-[10px] text-gray-500 uppercase">Total Unrealized P&L</span>
-          <div className={`flex items-baseline space-x-1.5 mt-0.5 font-mono font-bold text-base ${isPos ? "text-emerald-400" : "text-red-400"}`}>
-            <span>{isPos ? "+" : ""}₹{summary.total_unrealized_pnl?.toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}</span>
+
+        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Total Unrealized P&L</span>
+          <div className={`flex items-baseline space-x-1.5 mt-1 font-mono font-bold text-lg tabular-nums ${isPos ? "text-emerald-400" : "text-rose-400"}`}>
+            <span>{isPos ? "+" : ""}₹{summary.total_unrealized_pnl ? Number(summary.total_unrealized_pnl).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</span>
             <span className="text-xs">({isPos ? "+" : ""}{summary.total_unrealized_pnl_pct || 0}%)</span>
           </div>
         </div>
-        <div className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
-          <span className="text-[10px] text-gray-500 uppercase">Active Holdings</span>
-          <p className="font-mono font-bold text-base text-blue-400 mt-0.5">
-            {summary.position_count || 0} Stocks
+
+        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Active Positions</span>
+          <p className="font-mono font-bold text-lg text-blue-400 mt-1 tabular-nums">
+            {summary.position_count || positions.length} Equities
           </p>
         </div>
       </div>
 
       {/* Holdings Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-800 bg-[#111827]">
-        <table className="w-full text-left text-xs">
-          <thead className="border-b border-gray-800 bg-gray-900/80 text-[11px] font-bold uppercase text-gray-400 font-mono">
-            <tr>
-              <th className="px-4 py-3">Symbol</th>
-              <th className="px-3 py-3">Sector</th>
-              <th className="px-3 py-3 text-right">Qty</th>
-              <th className="px-3 py-3 text-right">Avg Buy (₹)</th>
-              <th className="px-3 py-3 text-right">LTP (₹)</th>
-              <th className="px-3 py-3 text-right">Invested</th>
-              <th className="px-3 py-3 text-right">Current Value</th>
-              <th className="px-3 py-3 text-right">P&L (₹)</th>
-              <th className="px-3 py-3 text-right">Return %</th>
-              <th className="px-4 py-3 text-center">Delete</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800 font-mono">
-            {positions.map((pos: any) => {
-              const posGain = pos.unrealized_pnl >= 0;
-              return (
-                <tr key={pos.id} className="hover:bg-gray-800/40 transition">
-                  <td className="px-4 py-2.5 font-sans font-bold text-gray-100">{pos.symbol}</td>
-                  <td className="px-3 py-2.5 font-sans text-gray-400">{pos.sector || "Equities"}</td>
-                  <td className="px-3 py-2.5 text-right text-gray-300">{pos.quantity}</td>
-                  <td className="px-3 py-2.5 text-right text-gray-300">₹{pos.purchase_price.toFixed(2)}</td>
-                  <td className="px-3 py-2.5 text-right font-bold text-gray-100">₹{pos.current_price?.toFixed(2)}</td>
-                  <td className="px-3 py-2.5 text-right text-gray-400">₹{pos.invested_value?.toLocaleString()}</td>
-                  <td className="px-3 py-2.5 text-right text-gray-200">₹{pos.current_value?.toLocaleString()}</td>
-                  <td className={`px-3 py-2.5 text-right font-bold ${posGain ? "text-emerald-400" : "text-red-400"}`}>
-                    {posGain ? "+" : ""}₹{pos.unrealized_pnl?.toLocaleString()}
-                  </td>
-                  <td className={`px-3 py-2.5 text-right font-bold ${posGain ? "text-emerald-400" : "text-red-400"}`}>
-                    {posGain ? `+${pos.unrealized_pnl_pct}%` : `${pos.unrealized_pnl_pct}%`}
-                  </td>
-                  <td className="px-4 py-2.5 text-center">
-                    <button
-                      onClick={() => handleDeletePosition(pos.id)}
-                      className="rounded bg-gray-800 p-1 text-gray-400 hover:text-red-400 transition"
-                      title="Delete Holding"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+      <div className="glass-card rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left text-xs whitespace-nowrap">
+            <thead className="bg-gray-900/60 dark:bg-gray-950/70 border-b border-white/[0.08] text-[10px] uppercase font-bold tracking-wider text-gray-400">
+              <tr>
+                <th className="py-3 px-4">Instrument</th>
+                <th className="py-3 px-3">Sector</th>
+                <th className="py-3 px-3 text-right">Shares</th>
+                <th className="py-3 px-3 text-right">Avg Cost</th>
+                <th className="py-3 px-3 text-right">CMP (LTP)</th>
+                <th className="py-3 px-3 text-right">Invested</th>
+                <th className="py-3 px-3 text-right">Current Value</th>
+                <th className="py-3 px-3 text-right">Unrealized P&L</th>
+                <th className="py-3 px-3 text-right">Return %</th>
+                <th className="py-3 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.04]">
+              {positions.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-8 text-center text-xs text-gray-400">
+                    No holdings logged yet. Click "Add Holding" above to start tracking.
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ) : (
+                positions.map((pos: any) => {
+                  const posGain = (pos.unrealized_pnl || 0) >= 0;
+                  return (
+                    <tr key={pos.id} className="hover:bg-white/[0.02] transition">
+                      <td className="py-3 px-4 font-bold text-gray-100 flex items-center space-x-2">
+                        <span className="h-6 w-6 rounded-md bg-blue-500/10 text-blue-400 flex items-center justify-center font-mono text-[10px]">
+                          {pos.symbol.slice(0, 2)}
+                        </span>
+                        <span>{pos.symbol}</span>
+                      </td>
+                      <td className="py-3 px-3 text-gray-400">{pos.sector || "Equities"}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-300">{pos.quantity}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-300">₹{Number(pos.purchase_price).toFixed(2)}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold tabular-nums text-gray-100">₹{Number(pos.current_price || pos.purchase_price).toFixed(2)}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-400">₹{Number(pos.invested_value || 0).toLocaleString("en-IN")}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-200">₹{Number(pos.current_value || 0).toLocaleString("en-IN")}</td>
+                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${posGain ? "text-emerald-400" : "text-rose-400"}`}>
+                        {posGain ? "+" : ""}₹{Number(pos.unrealized_pnl || 0).toLocaleString("en-IN")}
+                      </td>
+                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${posGain ? "text-emerald-400" : "text-rose-400"}`}>
+                        {posGain ? `+${pos.unrealized_pnl_pct}%` : `${pos.unrealized_pnl_pct}%`}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => handleDeletePosition(pos.id)}
+                          className="rounded-lg p-1 text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                          title="Delete Holding"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 };
-

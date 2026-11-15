@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Activity, Clock, AlertCircle, ArrowUpRight, ArrowDownRight, RefreshCw, BarChart2 } from "lucide-react";
+import { Activity, Clock, AlertCircle, ArrowUpRight, ArrowDownRight, RefreshCw, BarChart2, ShieldAlert, Sparkles, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { FinancialChart } from "../charts/FinancialChart";
 
@@ -45,99 +45,165 @@ export const LiveMarketView: React.FC<LiveMarketViewProps> = ({ onSelectStock })
   const tech = stockDetail?.technical_indicators || {};
   const observations = intradayReport?.observations || [];
 
+  const SYMBOLS = [
+    { sym: "RELIANCE", name: "Reliance Ind." },
+    { sym: "TCS", name: "Tata Consultancy" },
+    { sym: "HDFCBANK", name: "HDFC Bank" },
+    { sym: "INFY", name: "Infosys" },
+    { sym: "SBIN", name: "State Bank of India" },
+    { sym: "BHARTIARTL", name: "Bharti Airtel" },
+    { sym: "LT", name: "Larsen & Toubro" },
+  ];
+
   return (
-    <div className="space-y-4 p-4 max-w-7xl mx-auto">
+    <div className="space-y-5 p-3 sm:p-5 max-w-7xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] dark:border-white/[0.08] pb-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <Activity className="h-5 w-5 text-emerald-400" />
-            <h1 className="text-base font-bold uppercase tracking-wider text-gray-100">
-              Live / Intraday Market Monitor & Microstructure
-            </h1>
+          <div className="flex items-center space-x-2.5">
+            <div className="h-8 w-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Activity className="h-4 w-4 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                  Live Market Microstructure & Intraday Terminal
+                </h1>
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  ● 15M CYCLE
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Real-time technical indicators, live order-flow microstructure, and rule-based behavioral observation engine.
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
-            15-minute polling cycles, real-time indicators, and automated behavioral observation engine.
-          </p>
         </div>
 
         <button
           onClick={loadData}
           disabled={loading}
-          className="flex items-center space-x-1.5 rounded bg-gray-800 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:text-white transition"
+          className="flex items-center space-x-1.5 rounded-xl border border-white/[0.1] bg-gray-900/40 hover:bg-gray-800/60 dark:bg-gray-800/50 dark:hover:bg-gray-700/60 px-3.5 py-2 text-xs font-semibold text-gray-200 transition active:scale-95 shadow-sm"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-blue-400" : "text-gray-400"}`} />
           <span>Refresh Intraday</span>
         </button>
       </div>
 
-      {/* Main Grid: Chart + Indicator Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Left 2 Cols: Chart with Symbol Buttons */}
-        <div className="lg:col-span-2 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center space-x-1">
-              {["RELIANCE", "TCS", "HDFCBANK", "INFY", "SBIN", "BHARTIARTL", "LT"].map((sym) => (
-                <button
-                  key={sym}
-                  onClick={() => setSelectedSymbol(sym)}
-                  className={`rounded px-2.5 py-1 text-xs font-semibold transition ${
-                    selectedSymbol === sym
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
-                  }`}
-                >
-                  {sym}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => onSelectStock(selectedSymbol)}
-              className="text-xs text-blue-400 hover:underline font-semibold"
-            >
-              Open Full Dossier →
-            </button>
+      {/* Symbol Quick Switcher Ribbon */}
+      <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center space-x-1.5 min-w-max">
+          {SYMBOLS.map(({ sym, name }) => {
+            const active = selectedSymbol === sym;
+            return (
+              <button
+                key={sym}
+                onClick={() => setSelectedSymbol(sym)}
+                className={`group relative rounded-xl px-3 py-1.5 text-xs font-semibold transition active:scale-95 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 border border-blue-400/40"
+                    : "bg-gray-900/60 dark:bg-gray-900/60 text-gray-400 border border-white/[0.06] hover:border-white/20 hover:text-gray-200"
+                }`}
+              >
+                <span className="tracking-tight">{sym}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={() => onSelectStock(selectedSymbol)}
+          className="hidden sm:flex items-center space-x-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition shrink-0 pl-3"
+        >
+          <span>Open Full Dossier</span>
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      {/* Main Grid: Chart + Indicator Battery + Observations */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left 2 Cols: Interactive Financial Chart & Indicators */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="glass-card rounded-2xl p-3 sm:p-4 border border-white/[0.08] shadow-xl">
+            <FinancialChart symbol={selectedSymbol} candles={chartData} height={400} />
           </div>
 
-          <FinancialChart symbol={selectedSymbol} candles={chartData} height={380} />
-
           {/* Indicator Battery Grid */}
-          <div className="rounded-lg border border-gray-800 bg-[#111827] p-3 shadow">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-300 mb-2.5">
-              Technical Indicator Battery: {selectedSymbol}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="rounded bg-gray-900/80 p-2">
-                <span className="text-[10px] text-gray-500">RSI (14-Day)</span>
-                <p className="font-mono font-bold text-gray-200 mt-0.5">{tech.rsi14 || 50.0}</p>
-                <span className="text-[10px] text-gray-400">
-                  {tech.rsi14 > 70 ? "Overbought" : tech.rsi14 < 30 ? "Oversold" : "Neutral Bullish"}
-                </span>
+          <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+            <div className="flex items-center justify-between mb-3.5">
+              <div className="flex items-center space-x-2">
+                <BarChart2 className="h-4 w-4 text-blue-400" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                  Technical Indicator Battery: {selectedSymbol}
+                </h3>
               </div>
-              <div className="rounded bg-gray-900/80 p-2">
-                <span className="text-[10px] text-gray-500">Supertrend (10, 3)</span>
+              <span className="text-[11px] font-mono text-gray-500">
+                Formula: EMA20 / RSI14 / Supertrend(10,3)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+              {/* RSI */}
+              <div className="rounded-xl border border-white/[0.06] bg-gray-950/50 p-3 hover:border-white/[0.12] transition">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">RSI (14-Day)</span>
+                <p className="font-mono font-bold text-gray-100 text-base sm:text-lg mt-0.5 tabular-nums">
+                  {tech.rsi14 ? tech.rsi14.toFixed(1) : "50.0"}
+                </p>
+                <div className="mt-1 flex items-center space-x-1">
+                  <span
+                    className={`inline-block h-1.5 w-1.5 rounded-full ${
+                      (tech.rsi14 || 50) > 70
+                        ? "bg-amber-400"
+                        : (tech.rsi14 || 50) < 30
+                        ? "bg-blue-400"
+                        : "bg-emerald-400"
+                    }`}
+                  />
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    {(tech.rsi14 || 50) > 70
+                      ? "Overbought"
+                      : (tech.rsi14 || 50) < 30
+                      ? "Oversold"
+                      : "Neutral Bullish"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Supertrend */}
+              <div className="rounded-xl border border-white/[0.06] bg-gray-950/50 p-3 hover:border-white/[0.12] transition">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Supertrend (10,3)</span>
                 <p
-                  className={`font-mono font-bold mt-0.5 ${
-                    tech.supertrend_direction === "BULLISH" ? "text-emerald-400" : "text-red-400"
+                  className={`font-mono font-bold text-base sm:text-lg mt-0.5 tracking-tight ${
+                    tech.supertrend_direction === "BULLISH" ? "text-emerald-400" : "text-rose-400"
                   }`}
                 >
                   {tech.supertrend_direction || "BULLISH"}
                 </p>
-                <span className="text-[10px] text-gray-400">₹{tech.supertrend_value || "--"}</span>
-              </div>
-              <div className="rounded bg-gray-900/80 p-2">
-                <span className="text-[10px] text-gray-500">MA Alignment</span>
-                <p className="font-mono font-bold text-gray-200 mt-0.5">{tech.ma_alignment || "MIXED"}</p>
-                <span className="text-[10px] text-gray-400">
-                  EMA20: ₹{tech.ema20 || "--"}
-                </span>
-              </div>
-              <div className="rounded bg-gray-900/80 p-2">
-                <span className="text-[10px] text-gray-500">RVOL & ADX</span>
-                <p className="font-mono font-bold text-gray-200 mt-0.5">
-                  {tech.rvol || 1.0}x | ADX {tech.adx14 || 22}
+                <p className="text-[10px] font-mono text-gray-400 mt-1 tabular-nums">
+                  Stop: ₹{tech.supertrend_value ? Number(tech.supertrend_value).toLocaleString("en-IN") : "--"}
                 </p>
-                <span className="text-[10px] text-gray-400">ATR14: ₹{tech.atr14 || "--"}</span>
+              </div>
+
+              {/* MA Alignment */}
+              <div className="rounded-xl border border-white/[0.06] bg-gray-950/50 p-3 hover:border-white/[0.12] transition">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">MA Stack</span>
+                <p className="font-mono font-bold text-gray-100 text-base sm:text-lg mt-0.5 tracking-tight">
+                  {tech.ma_alignment || "BULLISH"}
+                </p>
+                <p className="text-[10px] font-mono text-gray-400 mt-1 tabular-nums">
+                  EMA20: ₹{tech.ema20 ? Number(tech.ema20).toLocaleString("en-IN") : "--"}
+                </p>
+              </div>
+
+              {/* RVOL & Volatility */}
+              <div className="rounded-xl border border-white/[0.06] bg-gray-950/50 p-3 hover:border-white/[0.12] transition">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">RVOL & ADX</span>
+                <p className="font-mono font-bold text-gray-100 text-base sm:text-lg mt-0.5 tabular-nums">
+                  {tech.rvol ? Number(tech.rvol).toFixed(2) : "1.12"}x
+                </p>
+                <p className="text-[10px] font-mono text-gray-400 mt-1 tabular-nums">
+                  ADX: {tech.adx14 || 24} • ATR: ₹{tech.atr14 ? Number(tech.atr14).toFixed(1) : "--"}
+                </p>
               </div>
             </div>
           </div>
@@ -145,41 +211,59 @@ export const LiveMarketView: React.FC<LiveMarketViewProps> = ({ onSelectStock })
 
         {/* Right Col: Intraday Observation Engine */}
         <div className="space-y-4">
-          <div className="rounded-lg border border-gray-800 bg-[#111827] p-3.5 shadow">
-            <div className="flex items-center space-x-1.5 border-b border-gray-800 pb-2 mb-3">
-              <AlertCircle className="h-4 w-4 text-amber-400" />
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-200">
-                Intraday Observation Engine
+          <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] shadow-xl">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-3.5">
+              <div className="flex items-center space-x-2">
+                <div className="h-6 w-6 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-200">
+                  Observation Engine
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-amber-400/90 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                ACTIVE
               </span>
             </div>
 
             <div className="space-y-3">
-              {observations.map((obs: any, i: number) => (
-                <div
-                  key={i}
-                  className="rounded border border-gray-800 bg-gray-900/60 p-2.5 text-xs space-y-1.5"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-200">{obs.title}</span>
-                    <span className="text-[10px] text-gray-400 flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
-                      <span>{obs.timestamp}</span>
-                    </span>
-                  </div>
-                  <p className="text-gray-300">
-                    <strong className="text-gray-400">What Happened: </strong>
-                    {obs.what_happened}
-                  </p>
-                  <p className="text-gray-400 text-[11px]">
-                    <strong className="text-gray-400">Supporting Evidence: </strong>
-                    {obs.supporting_data}
-                  </p>
-                  <div className="rounded bg-amber-950/30 border border-amber-900/40 p-1.5 text-[10px] text-amber-300">
-                    <strong>Invalidation Criteria: </strong>
-                    {obs.invalidation_condition}
-                  </div>
+              {observations.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-white/[0.1] bg-gray-950/40 p-4 text-center">
+                  <p className="text-xs text-gray-400">No abnormal price dislocations detected in current session.</p>
                 </div>
-              ))}
+              ) : (
+                observations.map((obs: any, i: number) => (
+                  <div
+                    key={i}
+                    className="group rounded-xl border border-white/[0.06] bg-gray-950/60 p-3.5 text-xs space-y-2 hover:border-white/20 transition shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-gray-200 text-xs tracking-tight group-hover:text-blue-300 transition">
+                        {obs.title}
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-mono flex items-center space-x-1 bg-white/[0.04] px-1.5 py-0.5 rounded">
+                        <Clock className="h-3 w-3 text-gray-500" />
+                        <span>{obs.timestamp || "Live"}</span>
+                      </span>
+                    </div>
+
+                    <p className="text-gray-300 text-xs leading-relaxed">
+                      <span className="text-gray-500 font-semibold">Event: </span>
+                      {obs.what_happened}
+                    </p>
+
+                    <p className="text-gray-400 text-[11px] leading-relaxed">
+                      <span className="text-gray-500 font-semibold">Evidence: </span>
+                      {obs.supporting_data}
+                    </p>
+
+                    <div className="rounded-lg bg-amber-500/[0.08] border border-amber-500/20 p-2 text-[11px] text-amber-300/90 leading-tight">
+                      <strong className="text-amber-200">Invalidation: </strong>
+                      {obs.invalidation_condition}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -187,4 +271,3 @@ export const LiveMarketView: React.FC<LiveMarketViewProps> = ({ onSelectStock })
     </div>
   );
 };
-

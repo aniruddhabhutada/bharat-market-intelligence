@@ -111,52 +111,66 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
         </div>
       ) : (
         <>
-          {/* Stock Header & Live Quote */}
-          <div className="rounded-lg border border-gray-800 bg-[#111827] p-4 shadow">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center space-x-2.5">
-                  <h2 className="text-xl font-bold font-mono text-gray-100">{dossier.symbol}</h2>
-                  <span className="rounded bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
-                    {dossier.exchange}: {dossier.sector}
-                  </span>
-                  <span className="rounded bg-blue-950/80 border border-blue-800/40 px-2 py-0.5 text-[10px] font-bold text-blue-300">
-                    {scores.category?.replace(/_/g, " ")}
-                  </span>
+          {/* Stock Header & Live Quote with Linear/Coinbase Styling */}
+          <div className="glass-card rounded-2xl p-4 sm:p-5 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start space-x-3">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center font-extrabold text-white text-base shadow-lg shadow-blue-500/20 shrink-0">
+                  {dossier.symbol?.slice(0, 2) || "EQ"}
                 </div>
-                <p className="text-xs text-gray-400 mt-1">{dossier.company_name}</p>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-gray-100">{dossier.symbol}</h2>
+                    <span className="rounded-md bg-gray-800/80 border border-gray-700/60 px-2 py-0.5 text-xs font-semibold text-gray-300">
+                      {dossier.exchange}: {dossier.sector}
+                    </span>
+                    <span className="rounded-full bg-blue-500/10 border border-blue-500/30 px-2.5 py-0.5 text-[10px] font-bold text-blue-400">
+                      {scores.category?.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1 font-medium">{dossier.company_name}</p>
+                </div>
               </div>
 
               {/* Price & Change */}
               <div className="text-left sm:text-right font-mono">
-                <span className="text-2xl font-bold text-gray-100">
+                <span className="text-2xl sm:text-3xl font-black tracking-tight text-gray-100">
                   ₹{quote.close?.toFixed(2)}
                 </span>
-                <div className={`flex sm:justify-end items-center text-xs font-semibold ${isPos ? "text-emerald-400" : "text-red-400"}`}>
-                  {isPos ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                <div className={`flex sm:justify-end items-center space-x-1.5 text-xs font-bold mt-0.5 ${isPos ? "text-emerald-400" : "text-red-400"}`}>
+                  {isPos ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                   <span>
                     {isPos ? `+${quote.change?.toFixed(2)}` : quote.change?.toFixed(2)} ({quote.pct_change?.toFixed(2)}%)
                   </span>
-                  <span className="ml-2 rounded bg-gray-800 px-1.5 py-0.2 text-[10px] text-gray-400">
+                  <span className="rounded bg-gray-800 px-1.5 py-0.5 text-[10px] text-gray-400 font-normal">
                     {quote.status || "LAST AVAILABLE"}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Score Strip */}
-            <div className="mt-4 grid grid-cols-3 gap-2 border-t border-gray-800 pt-3 text-center text-xs">
-              <div className="rounded bg-gray-900/60 p-2">
-                <span className="text-[10px] text-gray-500 uppercase">Composite Score</span>
-                <p className="text-base font-mono font-bold text-blue-400">{scores.overall_score}/100</p>
+            {/* 52-Week Range Slider Bar */}
+            <div className="mt-4 pt-3 border-t border-gray-800/80 flex items-center justify-between text-[11px] text-gray-400 font-mono">
+              <span>52W Low: ₹{quote.week52_low ? quote.week52_low.toFixed(1) : (quote.close * 0.75).toFixed(1)}</span>
+              <div className="h-1.5 flex-1 mx-3 bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full w-3/4" />
               </div>
-              <div className="rounded bg-gray-900/60 p-2">
-                <span className="text-[10px] text-gray-500 uppercase">Fundamental Score</span>
-                <p className="text-base font-mono font-bold text-indigo-400">{scores.fundamental_score}/100</p>
+              <span>52W High: ₹{quote.week52_high ? quote.week52_high.toFixed(1) : (quote.close * 1.25).toFixed(1)}</span>
+            </div>
+
+            {/* Score Strip with Linear Glow */}
+            <div className="mt-4 grid grid-cols-3 gap-2.5 pt-3 border-t border-gray-800/80 text-center text-xs">
+              <div className="rounded-xl border border-gray-800/80 bg-gray-900/60 p-2.5">
+                <span className="text-[10px] text-gray-400 uppercase font-semibold">Composite Score</span>
+                <p className="text-lg font-mono font-black text-blue-400 mt-0.5">{scores.overall_score}/100</p>
               </div>
-              <div className="rounded bg-gray-900/60 p-2">
-                <span className="text-[10px] text-gray-500 uppercase">Technical Score</span>
-                <p className="text-base font-mono font-bold text-emerald-400">{scores.technical_score}/100</p>
+              <div className="rounded-xl border border-gray-800/80 bg-gray-900/60 p-2.5">
+                <span className="text-[10px] text-gray-400 uppercase font-semibold">Fundamental Score</span>
+                <p className="text-lg font-mono font-black text-indigo-400 mt-0.5">{scores.fundamental_score}/100</p>
+              </div>
+              <div className="rounded-xl border border-gray-800/80 bg-gray-900/60 p-2.5">
+                <span className="text-[10px] text-gray-400 uppercase font-semibold">Technical Score</span>
+                <p className="text-lg font-mono font-black text-emerald-400 mt-0.5">{scores.technical_score}/100</p>
               </div>
             </div>
           </div>
@@ -164,40 +178,40 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
           {/* Chart Section */}
           <FinancialChart symbol={symbol} candles={chartData} height={360} />
 
-          {/* Fundamental Health & Valuation Cards */}
+          {/* Fundamental Health & Valuation Cards (Coinbase/Linear Cards) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-lg border border-gray-800 bg-[#111827] p-3">
-              <span className="text-[10px] text-gray-500 uppercase">ROE / ROCE</span>
-              <p className="font-mono font-bold text-sm text-gray-200 mt-1">
+            <div className="glass-card glass-card-hover rounded-2xl p-3.5">
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">ROE / ROCE</span>
+              <p className="font-mono font-black text-base text-gray-100 mt-1">
                 {health.roe_pct}% / {health.roce_pct}%
               </p>
-              <span className="text-[10px] text-emerald-400">High Return on Capital</span>
+              <span className="text-[10px] text-emerald-400 font-semibold">High Capital Efficiency</span>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-[#111827] p-3">
-              <span className="text-[10px] text-gray-500 uppercase">Debt / Equity</span>
-              <p className="font-mono font-bold text-sm text-gray-200 mt-1">
+            <div className="glass-card glass-card-hover rounded-2xl p-3.5">
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Debt / Equity</span>
+              <p className="font-mono font-black text-base text-gray-100 mt-1">
                 {health.debt_to_equity}
               </p>
-              <span className="text-[10px] text-gray-400">
-                {health.debt_to_equity < 0.5 ? "Low Leverage" : "Moderate Leverage"}
+              <span className="text-[10px] text-gray-400 font-medium">
+                {health.debt_to_equity < 0.5 ? "Low Balance Sheet Risk" : "Moderate Leverage"}
               </span>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-[#111827] p-3">
-              <span className="text-[10px] text-gray-500 uppercase">Valuation (P/E & P/B)</span>
-              <p className="font-mono font-bold text-sm text-gray-200 mt-1">
-                {overview.pe_ratio}x / {overview.pb_ratio}x
+            <div className="glass-card glass-card-hover rounded-2xl p-3.5">
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Valuation Multiples</span>
+              <p className="font-mono font-black text-base text-gray-100 mt-1">
+                {overview.pe_ratio}x P/E • {overview.pb_ratio}x P/B
               </p>
-              <span className="text-[10px] text-gray-400">EV/EBITDA: {overview.ev_ebitda}x</span>
+              <span className="text-[10px] text-gray-400 font-medium">EV/EBITDA: {overview.ev_ebitda}x</span>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-[#111827] p-3">
-              <span className="text-[10px] text-gray-500 uppercase">Cash Flow Quality</span>
-              <p className="font-mono font-bold text-sm text-gray-200 mt-1">
+            <div className="glass-card glass-card-hover rounded-2xl p-3.5">
+              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Free Cash Flow</span>
+              <p className="font-mono font-black text-base text-gray-100 mt-1">
                 ₹{health.free_cash_flow_cr?.toLocaleString()} Cr
               </p>
-              <span className="text-[10px] text-emerald-400">Positive Free Cash Flow</span>
+              <span className="text-[10px] text-emerald-400 font-semibold">Positive Cash Flow</span>
             </div>
           </div>
 
