@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { TrendingUp, BarChart2, Layers } from "lucide-react";
 
-interface Candle {
+export interface CandleData {
   time: string;
   open: number;
   high: number;
@@ -14,7 +13,7 @@ interface Candle {
 
 interface FinancialChartProps {
   symbol: string;
-  candles: Candle[];
+  candles?: CandleData[];
   height?: number;
 }
 
@@ -29,7 +28,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
 
   if (!candles || candles.length === 0) {
     return (
-      <div className="flex h-64 w-full items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/50 text-xs text-gray-500">
+      <div className="flex h-64 w-full items-center justify-center rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-[#F5F7FB] dark:bg-gray-900/50 text-xs text-[#667085] dark:text-gray-500">
         No historical chart bars available for {symbol}.
       </div>
     );
@@ -94,17 +93,19 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
   const endDate = lastCandle?.time?.split("T")[0] || "";
 
   return (
-    <div className="glass-card rounded-2xl p-3.5 sm:p-4 shadow-xl">
+    <div className="glass-card rounded-2xl p-3.5 sm:p-4 shadow-sm">
       {/* Chart Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800 pb-2.5 mb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5EAF2] dark:border-[#1F2E47] pb-2.5 mb-2.5">
         <div className="flex items-center space-x-2.5">
-          <span className="font-extrabold text-sm sm:text-base text-gray-100 tracking-tight">{symbol}</span>
-          <span className="text-xs sm:text-sm font-mono font-bold text-gray-200">
+          <span className="font-extrabold text-sm sm:text-base text-[#172B4D] dark:text-[#F4F6FB] tracking-tight">{symbol}</span>
+          <span className="text-xs sm:text-sm font-mono font-bold text-[#172B4D] dark:text-[#F4F6FB]">
             ₹{lastCandle.close.toFixed(2)}
           </span>
           <span
             className={`text-[11px] font-bold font-mono px-2 py-0.5 rounded-full ${
-              isUp ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60" : "bg-red-950/80 text-red-400 border border-red-800/60"
+              isUp
+                ? "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"
+                : "bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/60"
             }`}
           >
             {isUp ? "▲" : "▼"} {((lastCandle.close - lastCandle.open) / lastCandle.open * 100).toFixed(2)}%
@@ -123,8 +124,8 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
               onClick={() => setTimeframe(tf.count)}
               className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition active:scale-95 ${
                 timeframe === tf.count
-                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/20"
-                  : "bg-gray-800/80 text-gray-400 hover:text-white"
+                  ? "bg-[#315EFB] text-white shadow-sm"
+                  : "bg-[#F5F7FB] dark:bg-gray-800/80 text-[#667085] dark:text-gray-400 hover:text-[#172B4D] dark:hover:text-white border border-[#E5EAF2] dark:border-transparent"
               }`}
             >
               {tf.label}
@@ -134,7 +135,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
           {/* Chart Type Toggle */}
           <button
             onClick={() => setChartType(chartType === "CANDLE" ? "AREA" : "CANDLE")}
-            className="rounded-lg bg-gray-800 px-2.5 py-1 text-[10px] font-bold text-gray-300 hover:text-white transition active:scale-95"
+            className="rounded-lg bg-[#F5F7FB] dark:bg-gray-800 px-2.5 py-1 text-[10px] font-bold text-[#172B4D] dark:text-gray-300 hover:text-[#315EFB] dark:hover:text-white border border-[#E5EAF2] dark:border-transparent transition active:scale-95"
           >
             {chartType === "CANDLE" ? "Candles" : "Area"}
           </button>
@@ -143,7 +144,9 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
           <button
             onClick={() => setShowSMA20(!showSMA20)}
             className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition active:scale-95 ${
-              showSMA20 ? "bg-amber-950 text-amber-300 border border-amber-800/60" : "bg-gray-800/80 text-gray-400"
+              showSMA20
+                ? "bg-amber-500/10 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60"
+                : "bg-[#F5F7FB] dark:bg-gray-800/80 text-[#667085] dark:text-gray-400 border border-[#E5EAF2] dark:border-transparent"
             }`}
           >
             SMA 20
@@ -161,9 +164,9 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
           <defs>
             {/* Glowing gradient for Area Chart */}
             <linearGradient id="chartAreaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.4" />
-              <stop offset="60%" stopColor="#3B82F6" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#315EFB" stopOpacity="0.35" />
+              <stop offset="60%" stopColor="#315EFB" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="#315EFB" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -173,8 +176,8 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
             const priceLevel = maxPrice - (maxPrice - minPrice) * ratio;
             return (
               <g key={ratio}>
-                <line x1="0" y1={y} x2={width} y2={y} stroke="#1f2937" strokeDasharray="3 3" opacity={0.6} />
-                <text x={width - 45} y={y - 3} fill="#6b7280" fontSize="9" textAnchor="end" fontFamily="monospace">
+                <line x1="0" y1={y} x2={width} y2={y} stroke="#E5EAF2" className="stroke-[#E5EAF2] dark:stroke-[#1F2E47]" strokeDasharray="3 3" opacity={0.8} />
+                <text x={width - 45} y={y - 3} fill="#8993A4" className="fill-[#8993A4] dark:fill-[#6C7A8E]" fontSize="9" textAnchor="end" fontFamily="monospace">
                   ₹{priceLevel.toFixed(1)}
                 </text>
               </g>
@@ -187,9 +190,10 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
             y1={chartHeight}
             x2={width}
             y2={chartHeight}
-            stroke="#374151"
+            stroke="#E5EAF2"
+            className="stroke-[#E5EAF2] dark:stroke-[#1F2E47]"
             strokeDasharray="2 2"
-            opacity={0.7}
+            opacity={0.8}
           />
 
           {/* Volume Profile Bars */}
@@ -205,8 +209,8 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
                 y={y}
                 width={Math.max(2, width / activeCandles.length - 2)}
                 height={Math.max(1, h)}
-                fill={green ? "#10b981" : "#ef4444"}
-                opacity={0.3}
+                fill={green ? "#14866D" : "#D94B50"}
+                opacity={0.25}
               />
             );
           })}
@@ -215,7 +219,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
           {chartType === "AREA" && (
             <>
               <path d={areaPath} fill="url(#chartAreaGradient)" />
-              <path d={linePath} fill="none" stroke="#3b82f6" strokeWidth="2.5" />
+              <path d={linePath} fill="none" stroke="#315EFB" strokeWidth="2.5" />
             </>
           )}
 
@@ -238,7 +242,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
                     y1={highY}
                     x2={x}
                     y2={lowY}
-                    stroke={green ? "#10b981" : "#ef4444"}
+                    stroke={green ? "#14866D" : "#D94B50"}
                     strokeWidth="1.2"
                   />
                   {/* Real Body */}
@@ -247,7 +251,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
                     y={Math.min(openY, closeY)}
                     width={barWidth}
                     height={Math.max(2, Math.abs(closeY - openY))}
-                    fill={green ? "#10b981" : "#ef4444"}
+                    fill={green ? "#14866D" : "#D94B50"}
                     rx="1"
                   />
                 </g>
@@ -256,30 +260,30 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
 
           {/* High Price Marker Tag */}
           <g transform={`translate(${getX(highestIdx)}, ${getY(activeCandles[highestIdx].high) - 12})`}>
-            <rect x="-24" y="-8" width="48" height="14" rx="4" fill="#065f46" opacity="0.9" />
-            <text x="0" y="2" fill="#34d399" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+            <rect x="-24" y="-8" width="48" height="14" rx="4" fill="#14866D" opacity={0.9} />
+            <text x="0" y="2" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
               H: ₹{activeCandles[highestIdx].high.toFixed(0)}
             </text>
           </g>
 
           {/* Low Price Marker Tag */}
           <g transform={`translate(${getX(lowestIdx)}, ${getY(activeCandles[lowestIdx].low) + 14})`}>
-            <rect x="-24" y="-7" width="48" height="14" rx="4" fill="#7f1d1d" opacity="0.9" />
-            <text x="0" y="3" fill="#f87171" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
+            <rect x="-24" y="-7" width="48" height="14" rx="4" fill="#D94B50" opacity={0.9} />
+            <text x="0" y="3" fill="#FFFFFF" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
               L: ₹{activeCandles[lowestIdx].low.toFixed(0)}
             </text>
           </g>
 
           {/* SMA 20 Overlay Line */}
           {showSMA20 && smaPath && (
-            <path d={smaPath} fill="none" stroke="#f59e0b" strokeWidth="1.8" opacity={0.85} strokeLinecap="round" />
+            <path d={smaPath} fill="none" stroke="#F59E0B" strokeWidth="1.8" opacity={0.85} strokeLinecap="round" />
           )}
 
           {/* Date Axis Markers */}
-          <text x={getX(0)} y={chartHeight + volHeight + 14} fill="#6b7280" fontSize="9" fontFamily="monospace">
+          <text x={getX(0)} y={chartHeight + volHeight + 14} fill="#8993A4" className="fill-[#8993A4] dark:fill-[#6C7A8E]" fontSize="9" fontFamily="monospace">
             {startDate}
           </text>
-          <text x={getX(activeCandles.length - 1)} y={chartHeight + volHeight + 14} fill="#6b7280" fontSize="9" textAnchor="end" fontFamily="monospace">
+          <text x={getX(activeCandles.length - 1)} y={chartHeight + volHeight + 14} fill="#8993A4" className="fill-[#8993A4] dark:fill-[#6C7A8E]" fontSize="9" textAnchor="end" fontFamily="monospace">
             {endDate}
           </text>
         </svg>
