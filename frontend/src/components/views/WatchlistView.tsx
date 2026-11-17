@@ -78,25 +78,25 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
   };
 
   return (
-    <div className="space-y-5 p-3 sm:p-5 max-w-7xl mx-auto">
+    <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-200 dark:border-white/[0.08] pb-4">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="h-8 w-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <div className="h-8 w-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
               <Star className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h1 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                  Custom Watchlist Terminal & Baskets
+                  My Watchlists & Tracking Baskets
                 </h1>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  REAL-TIME QUOTES
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
+                  REAL-TIME PRICES
                 </span>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Multi-basket equity monitoring with 1-click dossier navigation and instant technical analysis.
+                Save companies you are researching. Click on any stock to open its full dossier.
               </p>
             </div>
           </div>
@@ -106,17 +106,17 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
         <form onSubmit={handleAddSymbol} className="flex items-center space-x-2 w-full sm:w-auto">
           <input
             type="text"
-            placeholder="Add symbol (e.g. INFY)..."
+            placeholder="Add NSE symbol (e.g. INFY, SBIN)..."
             value={newSymbol}
             onChange={(e) => setNewSymbol(e.target.value)}
-            className="rounded-xl bg-gray-900/80 border border-white/[0.1] px-3 py-1.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500 font-mono flex-1 sm:w-48"
+            className="rounded-xl bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-white/[0.1] px-3 py-1.5 text-xs text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-blue-500 font-mono flex-1 sm:w-48 shadow-inner"
           />
           <button
             type="submit"
-            className="flex items-center space-x-1 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-500/20 transition active:scale-95 shrink-0"
+            className="flex items-center space-x-1 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition active:scale-95 shrink-0"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Add</span>
+            <span>Add Stock</span>
           </button>
         </form>
       </div>
@@ -135,8 +135,8 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
                 }}
                 className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition active:scale-95 ${
                   active
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 border border-blue-400/40"
-                    : "bg-gray-900/60 dark:bg-gray-900/60 text-gray-400 border border-white/[0.06] hover:border-white/20 hover:text-gray-200"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-white dark:bg-gray-900/60 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-white/[0.06] hover:text-gray-900 dark:hover:text-gray-200"
                 }`}
               >
                 {w.name} ({w.symbols.length})
@@ -147,7 +147,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
 
         <button
           onClick={() => setShowNewListForm(!showNewListForm)}
-          className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-1 shrink-0 px-2"
+          className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center space-x-1 shrink-0 px-2"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>New Basket</span>
@@ -156,17 +156,17 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
 
       {/* New List Creator Form */}
       {showNewListForm && (
-        <form onSubmit={handleCreateList} className="glass-card rounded-2xl border border-white/[0.1] p-3.5 flex items-center space-x-2 shadow-xl animate-in fade-in slide-in-from-top-1">
+        <form onSubmit={handleCreateList} className="rounded-2xl border border-gray-200 dark:border-white/[0.1] bg-white dark:bg-[#0E1524] p-4 flex items-center space-x-2 shadow-sm">
           <input
             type="text"
-            placeholder="Basket Name (e.g. Bluechip Leaders)..."
+            placeholder="Basket Name (e.g. Dividend Leaders, High Growth)..."
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
-            className="rounded-xl bg-gray-950/70 border border-white/[0.1] px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500 flex-1"
+            className="rounded-xl bg-gray-50 dark:bg-gray-950/70 border border-gray-200 dark:border-white/[0.1] px-3 py-1.5 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500 flex-1"
           />
           <button
             type="submit"
-            className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition active:scale-95"
+            className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition active:scale-95"
           >
             Create Basket
           </button>
@@ -174,10 +174,10 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
       )}
 
       {/* Symbols Table */}
-      <div className="glass-card rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden">
+      <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] shadow-sm overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-left text-xs whitespace-nowrap">
-            <thead className="bg-gray-900/60 dark:bg-gray-950/70 border-b border-white/[0.08] text-[10px] uppercase font-bold tracking-wider text-gray-400">
+            <thead className="bg-gray-50 dark:bg-gray-900/60 border-b border-gray-200 dark:border-white/[0.08] text-[10px] uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400">
               <tr>
                 <th className="py-3 px-4">Instrument</th>
                 <th className="py-3 px-3 text-right">LTP (₹)</th>
@@ -189,11 +189,11 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
                 <th className="py-3 px-4 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/[0.04]">
               {currentList.symbols.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-xs text-gray-400">
-                    No symbols in this basket. Add one above to begin tracking.
+                  <td colSpan={8} className="py-10 text-center text-xs text-gray-400">
+                    Your watchlist is currently empty. Add a symbol above to start tracking it.
                   </td>
                 </tr>
               ) : (
@@ -202,42 +202,42 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({ onSelectStock }) =
                   const isPos = q ? q.change >= 0 : true;
 
                   return (
-                    <tr key={sym} className="hover:bg-white/[0.02] transition">
-                      <td className="py-3 px-4 font-bold text-gray-100 flex items-center space-x-2.5">
-                        <span className="h-6 w-6 rounded-md bg-blue-500/10 text-blue-400 flex items-center justify-center font-mono text-[10px]">
+                    <tr key={sym} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition">
+                      <td className="py-3 px-4 font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-2.5">
+                        <span className="h-6 w-6 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-mono text-[10px]">
                           {sym.slice(0, 2)}
                         </span>
                         <button
                           onClick={() => onSelectStock(sym)}
-                          className="hover:text-blue-400 transition tracking-tight"
+                          className="hover:text-blue-600 transition tracking-tight"
                         >
                           {sym}
                         </button>
                       </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold tabular-nums text-gray-100">
+                      <td className="py-3 px-3 text-right font-mono font-bold tabular-nums text-gray-900 dark:text-gray-100">
                         {q ? `₹${Number(q.close).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "--"}
                       </td>
-                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${isPos ? "text-emerald-400" : "text-rose-400"}`}>
+                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${isPos ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                         {q ? (isPos ? `+${q.change.toFixed(2)}` : q.change.toFixed(2)) : "--"}
                       </td>
-                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${isPos ? "text-emerald-400" : "text-rose-400"}`}>
+                      <td className={`py-3 px-3 text-right font-mono font-bold tabular-nums ${isPos ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                         {q ? (isPos ? `+${q.pct_change.toFixed(2)}%` : `${q.pct_change.toFixed(2)}%`) : "--"}
                       </td>
-                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-400">{q?.high ? Number(q.high).toFixed(2) : "--"}</td>
-                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-400">{q?.low ? Number(q.low).toFixed(2) : "--"}</td>
-                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-400">{q?.week52_high ? Number(q.week52_high).toFixed(2) : "--"}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-500 dark:text-gray-400">{q?.high ? Number(q.high).toFixed(2) : "--"}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-500 dark:text-gray-400">{q?.low ? Number(q.low).toFixed(2) : "--"}</td>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-gray-500 dark:text-gray-400">{q?.week52_high ? Number(q.week52_high).toFixed(2) : "--"}</td>
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center space-x-2">
                           <button
                             onClick={() => onSelectStock(sym)}
-                            className="rounded-lg p-1 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition"
+                            className="rounded-lg p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition"
                             title="Analyze Stock"
                           >
                             <ChevronRight className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleRemoveSymbol(sym)}
-                            className="rounded-lg p-1 text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                            className="rounded-lg p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition"
                             title="Remove from Watchlist"
                           >
                             <Trash2 className="h-3.5 w-3.5" />

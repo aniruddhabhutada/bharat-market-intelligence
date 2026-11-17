@@ -13,7 +13,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   const applyTheme = (newTheme: Theme) => {
@@ -46,10 +46,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setThemeState(savedTheme);
         applyTheme(savedTheme);
       } else {
-        applyTheme("dark");
+        setThemeState("light");
+        applyTheme("light");
       }
     } catch {
-      applyTheme("dark");
+      applyTheme("light");
     }
   }, []);
 
@@ -58,13 +59,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       localStorage.setItem("bmi_theme", newTheme);
     } catch (e) {
-      console.warn("Theme storage note:", e);
+      console.warn("Could not save theme preference to localStorage", e);
     }
     applyTheme(newTheme);
   };
 
   const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
+    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
   };
 
@@ -78,13 +79,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    // Graceful fallback for components rendering outside provider during SSR
-    return {
-      theme: "dark" as Theme,
-      toggleTheme: () => {},
-      setTheme: () => {}
-    };
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 };
-

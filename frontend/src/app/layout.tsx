@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { ExperienceModeProvider } from "@/context/ExperienceModeContext";
 
 export const metadata: Metadata = {
-  title: "Bharat Market Intelligence | AI-Powered Indian Stock Market Research",
+  title: "Bharat Market Intelligence | Understand the Indian Stock Market",
   description:
-    "Institutional-grade equity research terminal for NSE & BSE India. Pre-market intelligence, intraday monitoring, multi-factor stock screener, and 100% verified financials.",
+    "Your personal Indian stock-market research assistant. Understand market movements, analyse companies and discover stocks through clear, data-backed research.",
   applicationName: "Bharat Market Intelligence",
   authors: [{ name: "Aniruddha Bhutada", url: "https://github.com/aniruddhabhutada" }],
   creator: "Aniruddha Bhutada",
@@ -17,13 +18,13 @@ export const metadata: Metadata = {
     "NIFTY 50",
     "BANK NIFTY",
     "FII DII Flows",
-    "Technical Analysis",
+    "Stock Analysis",
     "Stock Screener"
   ]
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B0F19",
+  themeColor: "#2563EB",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1
@@ -35,10 +36,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark h-full">
+    <html lang="en" className="light h-full" suppressHydrationWarning>
       <body className="h-full antialiased overflow-hidden transition-colors duration-200">
         <ThemeProvider>
-          {children}
+          <ExperienceModeProvider>
+            {children}
+          </ExperienceModeProvider>
         </ThemeProvider>
       </body>
     </html>

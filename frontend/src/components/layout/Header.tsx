@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useTheme } from "@/context/ThemeContext";
+import { ModeToggle } from "@/components/ui/ModeToggle";
 
 interface HeaderProps {
   onOpenDataQuality: () => void;
@@ -188,6 +189,11 @@ export const Header: React.FC<HeaderProps> = ({
               100%
             </span>
           </button>
+
+          {/* Experience Mode Toggle — desktop only */}
+          <div className="hidden md:flex">
+            <ModeToggle />
+          </div>
 
           {/* Light / Dark Mode Toggle */}
           <button
