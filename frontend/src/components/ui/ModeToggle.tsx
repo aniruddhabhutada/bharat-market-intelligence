@@ -1,29 +1,50 @@
 "use client";
 
 import React from "react";
+import { BookOpen, BarChart2 } from "lucide-react";
 import { useExperienceMode } from "@/context/ExperienceModeContext";
 
 /**
- * ModeToggle — switches between "beginner" and "advanced" experience modes.
- * Intended for placement in the Header (desktop) and optionally in the Sidebar.
+ * ModeToggle — Segmented control switching between "Simple View" (Beginner)
+ * and "Advanced View". Preserved in localStorage across all pages.
  */
 export const ModeToggle: React.FC = () => {
   const { mode, setMode, isBeginner } = useExperienceMode();
 
   return (
-    <button
-      onClick={() => setMode(isBeginner ? "advanced" : "beginner")}
-      title={isBeginner ? "Switch to Advanced View" : "Switch to Simple View"}
-      aria-label="Toggle experience mode"
-      className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
-        isBeginner
-          ? "border-emerald-700/60 bg-emerald-950/80 text-emerald-300 hover:bg-emerald-900/80"
-          : "border-blue-700/60 bg-blue-950/80 text-blue-300 hover:bg-blue-900/80"
-      }`}
+    <div
+      role="group"
+      aria-label="Experience Mode Toggle"
+      className="inline-flex items-center rounded-lg border border-[#E5EAF2] dark:border-[#1F2E47] bg-[#EEF3FC] dark:bg-[#0B111E] p-0.5 text-xs"
     >
-      <span className={`h-2 w-2 rounded-full ${isBeginner ? "bg-emerald-400" : "bg-blue-400"}`} />
-      {isBeginner ? "Simple" : "Advanced"}
-    </button>
+      <button
+        type="button"
+        onClick={() => setMode("beginner")}
+        aria-pressed={isBeginner}
+        className={`flex items-center space-x-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+          isBeginner
+            ? "bg-white dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] shadow-sm"
+            : "text-[#667085] hover:text-[#172B4D] dark:text-[#97A3B6] dark:hover:text-[#F4F6FB]"
+        }`}
+      >
+        <BookOpen className="h-3.5 w-3.5" />
+        <span>Simple View</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setMode("advanced")}
+        aria-pressed={!isBeginner}
+        className={`flex items-center space-x-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+          !isBeginner
+            ? "bg-white dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] shadow-sm"
+            : "text-[#667085] hover:text-[#172B4D] dark:text-[#97A3B6] dark:hover:text-[#F4F6FB]"
+        }`}
+      >
+        <BarChart2 className="h-3.5 w-3.5" />
+        <span>Advanced View</span>
+      </button>
+    </div>
   );
 };
 

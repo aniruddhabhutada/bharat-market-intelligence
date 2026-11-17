@@ -14,16 +14,18 @@ import {
   ChevronRight,
   Compass,
   Layers,
-  SearchCheck,
   BarChart2,
-  Zap,
-  HelpCircle,
   BookOpen,
-  Info,
   Search,
-  ExternalLink,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Laptop,
+  Car,
+  Pill,
+  Zap,
+  ShoppingCart,
+  Heart,
+  LucideIcon
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { FinancialChart } from "../charts/FinancialChart";
@@ -35,34 +37,6 @@ interface DashboardViewProps {
   onNavigate: (view: any) => void;
 }
 
-// Mini SVG Sparkline for index cards
-const MiniSparkline: React.FC<{ isPositive: boolean; trendPoints?: number[] }> = ({
-  isPositive,
-  trendPoints = [10, 15, 12, 18, 14, 22, 19, 25, 28, 26, 32]
-}) => {
-  const points = isPositive ? trendPoints : trendPoints.slice().reverse();
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const width = 80;
-  const height = 28;
-  const step = width / (points.length - 1);
-
-  const coords = points.map((p, i) => {
-    const x = i * step;
-    const y = height - ((p - min) / (max - min || 1)) * (height - 6) - 3;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-
-  const path = `M ${coords.join(" L ")}`;
-  const color = isPositive ? "#10B981" : "#EF4444";
-
-  return (
-    <svg width={width} height={height} className="overflow-visible select-none">
-      <path d={path} fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-};
-
 export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onNavigate }) => {
   const { isBeginner } = useExperienceMode();
 
@@ -71,7 +45,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
   const [sectors, setSectors] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [selectedChartSym, setSelectedChartSym] = useState("NIFTY");
-  const [premarketBrief, setPremarketBrief] = useState<any>(null);
   const [news, setNews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,12 +52,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
   const loadData = async () => {
     setLoading(true);
     try {
-      const [idxRes, fdRes, secRes, chartRes, preRes, newsRes] = await Promise.allSettled([
+      const [idxRes, fdRes, secRes, chartRes, newsRes] = await Promise.allSettled([
         api.getIndices(),
         api.getFiiDii(5),
         api.getSectors(),
         api.getChart("RELIANCE", 60),
-        api.getPremarket(),
         api.getNews(4)
       ]);
 
@@ -92,10 +64,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       if (fdRes.status === "fulfilled") setFiiDii(fdRes.value);
       if (secRes.status === "fulfilled") setSectors(secRes.value.sectors || []);
       if (chartRes.status === "fulfilled") setChartData(chartRes.value.candles || []);
-      if (preRes.status === "fulfilled") setPremarketBrief(preRes.value);
       if (newsRes.status === "fulfilled") setNews(newsRes.value || []);
     } catch (e) {
-      console.error(e);
+      console.error("Dashboard data load error:", e);
     } finally {
       setLoading(false);
     }
@@ -128,21 +99,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
   const sensex = indices.find((i) => i.symbol === "SENSEX");
   const vix = indices.find((i) => i.symbol === "INDIAVIX" || i.name?.includes("VIX"));
 
-  // High conviction setups
+  // Curated research candidates (Non-promotional, balanced educational setups)
   const featuredOpportunities = [
     {
       symbol: "RELIANCE",
       name: "Reliance Industries",
-      setup: "Consolidation Breakout",
+      setup: "Consolidation Range",
       sector: "Energy & Retail",
       price: 1339.7,
       pct: "+0.72%",
       isUp: true,
-      tag: "52W High Proximity",
-      badgeBg: "from-emerald-600 to-teal-500",
+      tag: "Large-Cap Core",
       avatar: "RE",
-      thesis: "Strong retail margins and oil-to-chemical cash flow stability.",
-      risk: "Crude oil refining margin compression."
+      thesis: "Stable retail operating cash flows and steady consumer telecom ARPU expansion.",
+      risk: "Crude refining margin compression and capex financing costs."
     },
     {
       symbol: "TCS",
@@ -152,97 +122,142 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       price: 4150.0,
       pct: "+1.15%",
       isUp: true,
-      tag: "High ROCE (48%)",
-      badgeBg: "from-blue-600 to-cyan-500",
+      tag: "ROCE 48%",
       avatar: "TC",
-      thesis: "Zero debt, industry-leading operating margins, and mega deal wins.",
-      risk: "Global tech client discretionary spending slowdown."
+      thesis: "Zero net debt, high cash return payout, and resilient cloud transition pipeline.",
+      risk: "Global enterprise IT discretionary spend deferrals."
     },
     {
       symbol: "HDFCBANK",
       name: "HDFC Bank Limited",
-      setup: "EMA 20 Support",
+      setup: "Support Test",
       sector: "Banking & Finance",
       price: 1760.0,
       pct: "-0.38%",
       isUp: false,
-      tag: "Institutional Accumulation",
-      badgeBg: "from-indigo-600 to-purple-500",
+      tag: "Credit Benchmark",
       avatar: "HD",
-      thesis: "Loan book expansion and post-merger deposit mobilization ramp-up.",
-      risk: "Net interest margin (NIM) pressure."
+      thesis: "Broad deposit franchise growth and corporate loan credit recovery.",
+      risk: "Net interest margin compression during deposit competition."
     }
   ];
 
-  // Friendly sector mapping
-  const friendlySectors = [
-    { name: "Banking", icon: "🏦", change: "+0.64%", isUp: true, desc: "Large private and PSU banks" },
-    { name: "Information Tech", icon: "💻", change: "+1.12%", isUp: true, desc: "Software exporters (TCS, Infosys)" },
-    { name: "Automobiles", icon: "🚗", change: "+0.45%", isUp: true, desc: "Passenger vehicles & 2-wheelers" },
-    { name: "Pharmaceuticals", icon: "💊", change: "-0.28%", isUp: false, desc: "Generic drug makers & healthcare" },
-    { name: "Energy & Oil", icon: "⚡", change: "+0.31%", isUp: true, desc: "Refineries, power & green energy" },
-    { name: "FMCG (Consumer)", icon: "🛒", change: "-0.15%", isUp: false, desc: "Everyday household goods & foods" },
+  // Friendly sector mapping with clean Lucide icons (No unicode emojis)
+  const friendlySectors: { name: string; icon: LucideIcon; change: string; isUp: boolean; desc: string }[] = [
+    { name: "Banking", icon: Landmark, change: "+0.64%", isUp: true, desc: "Large private & PSU banks" },
+    { name: "Information Tech", icon: Laptop, change: "+1.12%", isUp: true, desc: "Software exporters (TCS, Infosys)" },
+    { name: "Automobiles", icon: Car, change: "+0.45%", isUp: true, desc: "Passenger & commercial vehicles" },
+    { name: "Pharmaceuticals", icon: Pill, change: "-0.28%", isUp: false, desc: "Formulations & healthcare" },
+    { name: "Energy & Oil", icon: Zap, change: "+0.31%", isUp: true, desc: "Refineries, power & utilities" },
+    { name: "FMCG (Consumer)", icon: ShoppingCart, change: "-0.15%", isUp: false, desc: "Household staples & foods" },
   ];
 
   return (
     <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
       {/* ───────────────────────────────────────────────────────────
-          HERO SECTION: Welcoming & Educational Search Hub
+          HERO SECTION: Purpose & Navigation Hub
       ─────────────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-gradient-to-br dark:from-[#0E1524] dark:to-[#0B0F19] p-5 sm:p-8 shadow-sm">
+      <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-6 sm:p-8 shadow-xs">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20 mb-3">
-            <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-            <span>Independent Indian Stock Market Research</span>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] mb-3 border border-[#CAD9FB] dark:border-[#1F2E47]">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Independent Indian Equity Research</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
-            Understand the Stock Market. <br className="hidden sm:inline" />
-            Make Smarter Research Decisions.
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#172B4D] dark:text-[#F4F6FB] leading-tight">
+            Understand the Stock Market. Research with Confidence.
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
-            Your personal Indian stock-market research assistant. Understand market movements, analyse company balance sheets, and discover stocks through clear, data-backed research.
+
+          <p className="mt-2 text-sm sm:text-base text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+            Your intelligent Indian stock market research assistant. Understand market movements, analyse companies and discover stocks with clear, data-backed insights.
           </p>
 
-          {/* Quick Search Bar */}
+          {/* Universal Search Field */}
           <form onSubmit={handleSearchSubmit} className="mt-5 flex items-center space-x-2 max-w-xl">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#667085] dark:text-[#97A3B6]" />
               <input
                 type="text"
-                placeholder="Search any company or NSE stock (e.g. Reliance, HDFC Bank, TCS, Infosys)..."
+                placeholder="Search a company or stock symbol (e.g. Reliance, HDFC Bank, TCS, Infosys)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl text-xs sm:text-sm bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-blue-500 shadow-inner"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47] text-[#172B4D] dark:text-[#F4F6FB] placeholder-[#8993A4] focus:outline-none focus:border-[#315EFB]"
               />
             </div>
             <button
               type="submit"
-              className="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold transition shadow-md shadow-blue-500/20 active:scale-95 shrink-0"
+              className="px-5 py-2.5 rounded-xl bg-[#315EFB] hover:bg-[#204AE0] text-white text-xs sm:text-sm font-semibold transition active:scale-95 shrink-0 shadow-xs"
             >
               Analyse
             </button>
           </form>
 
-          {/* 3 Clear Action Buttons */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-gray-500 dark:text-gray-400 font-medium">Popular shortcuts:</span>
+          {/* 3 Prominent User Actions */}
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
+              type="button"
               onClick={() => onNavigate("live")}
-              className="px-2.5 py-1 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition"
+              className="flex items-center space-x-2.5 p-3 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47] hover:border-[#315EFB] hover:bg-[#EEF3FC] dark:hover:bg-[#1A2844] text-left transition group"
             >
-              1. Today's Market Pulse
+              <div className="h-8 w-8 rounded-lg bg-[#315EFB]/10 text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center font-bold text-xs shrink-0">
+                1
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#172B4D] dark:text-[#F4F6FB] group-hover:text-[#315EFB]">
+                  Understand Today&apos;s Market
+                </div>
+                <div className="text-[11px] text-[#667085] dark:text-[#97A3B6]">
+                  What happened &amp; why
+                </div>
+              </div>
             </button>
+
             <button
+              type="button"
               onClick={() => onSelectStock("RELIANCE")}
-              className="px-2.5 py-1 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition"
+              className="flex items-center space-x-2.5 p-3 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47] hover:border-[#315EFB] hover:bg-[#EEF3FC] dark:hover:bg-[#1A2844] text-left transition group"
             >
-              2. Reliance Dossier
+              <div className="h-8 w-8 rounded-lg bg-[#315EFB]/10 text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center font-bold text-xs shrink-0">
+                2
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#172B4D] dark:text-[#F4F6FB] group-hover:text-[#315EFB]">
+                  Analyse a Stock
+                </div>
+                <div className="text-[11px] text-[#667085] dark:text-[#97A3B6]">
+                  Inspect financials &amp; health
+                </div>
+              </div>
             </button>
+
             <button
+              type="button"
               onClick={() => onNavigate("screener")}
-              className="px-2.5 py-1 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition"
+              className="flex items-center space-x-2.5 p-3 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47] hover:border-[#315EFB] hover:bg-[#EEF3FC] dark:hover:bg-[#1A2844] text-left transition group"
             >
-              3. Discover Strong Stocks
+              <div className="h-8 w-8 rounded-lg bg-[#315EFB]/10 text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center font-bold text-xs shrink-0">
+                3
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#172B4D] dark:text-[#F4F6FB] group-hover:text-[#315EFB]">
+                  Explore Stock Opportunities
+                </div>
+                <div className="text-[11px] text-[#667085] dark:text-[#97A3B6]">
+                  Filter by fundamental strength
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Welcoming Optional Introduction Link */}
+          <div className="mt-4 pt-3 border-t border-[#E5EAF2] dark:border-[#1F2E47] flex items-center justify-between text-xs">
+            <button
+              type="button"
+              onClick={() => onNavigate("learn")}
+              className="inline-flex items-center space-x-1.5 text-[#315EFB] dark:text-[#4D74FB] font-semibold hover:underline"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>New to investing? Start with our simple market guide.</span>
             </button>
           </div>
         </div>
@@ -254,25 +269,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100 flex items-center space-x-2">
-              <span>Today's Major Indian Market Benchmarks</span>
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-[#172B4D] dark:text-[#F4F6FB] flex items-center space-x-1.5">
+              <span>Today&apos;s Major Indian Market Benchmarks</span>
               <ExplainThis term="NIFTY 50" />
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Live updates directly from National Stock Exchange (NSE) and Bombay Stock Exchange (BSE).
+            <p className="text-xs text-[#667085] dark:text-[#97A3B6]">
+              Verified prices from National Stock Exchange (NSE) &amp; Bombay Stock Exchange (BSE).
             </p>
           </div>
           <button
+            type="button"
             onClick={loadData}
             disabled={loading}
-            className="flex items-center space-x-1.5 rounded-xl border border-gray-200 dark:border-white/[0.1] bg-white dark:bg-gray-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            className="flex items-center space-x-1.5 rounded-xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] px-3 py-1.5 text-xs font-semibold text-[#172B4D] dark:text-[#F4F6FB] hover:bg-[#F5F7FB] dark:hover:bg-[#1A2844] transition"
           >
-            <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin text-blue-600" : ""}`} />
+            <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin text-[#315EFB]" : ""}`} />
             <span className="hidden sm:inline">Refresh Data</span>
           </button>
         </div>
 
-        {/* 4 Cards Grid */}
+        {/* 4 Index Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {[
             {
@@ -283,9 +299,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
               defaultVal: 25144.3,
               defaultChg: -155.05,
               defaultPct: -0.61,
-              simpleExplanation: "Tracks India's 50 biggest companies. Represents broad market sentiment across the country.",
-              positiveMsg: "India's top 50 companies are performing well today, signaling strong buyer interest.",
-              negativeMsg: "Major bluechip companies faced selling pressure today as markets consolidated."
+              positiveMsg: "The 50 major companies in this index are trading higher, reflecting steady buyer confidence across key sectors.",
+              negativeMsg: "Major bluechip companies faced mild profit-booking today, keeping the broad market index in consolidation."
             },
             {
               term: "BANK NIFTY",
@@ -295,9 +310,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
               defaultVal: 61034.1,
               defaultChg: -484.4,
               defaultPct: -0.79,
-              simpleExplanation: "Tracks the 12 most important banks (HDFC, ICICI, SBI). Banks are the engine of credit growth.",
-              positiveMsg: "Banking stocks are leading the rally today with strong credit growth sentiment.",
-              negativeMsg: "Banking stocks are taking a breather, pulling the financial sector lower."
+              positiveMsg: "Banking stocks are leading session gains, driven by steady credit demand and treasury yields.",
+              negativeMsg: "Financial institutions saw selling pressure as investors adjusted interest rate and margin expectations."
             },
             {
               term: "SENSEX",
@@ -307,22 +321,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
               defaultVal: 81592.45,
               defaultChg: -318.55,
               defaultPct: -0.39,
-              simpleExplanation: "India's oldest benchmark of 30 corporate giants listed on the Bombay Stock Exchange.",
-              positiveMsg: "BSE's 30 largest companies are trading higher, reflecting general economic confidence.",
-              negativeMsg: "BSE's 30 benchmark companies experienced modest profit booking today."
+              positiveMsg: "The 30 large-cap enterprises on the Bombay Stock Exchange gained value compared to the previous close.",
+              negativeMsg: "Large-cap stocks listed on BSE recorded minor declines amid selective institutional rebalancing."
             },
             {
               term: "INDIA VIX",
-              label: "INDIA VIX (Volatility)",
+              label: "INDIA VIX",
               exchange: "NSE",
               data: vix,
               defaultVal: 15.5,
               defaultChg: -1.12,
               defaultPct: -6.74,
               isVix: true,
-              simpleExplanation: "The 'Fear Gauge' measuring expected market volatility over the next 30 days.",
-              positiveMsg: "Volatility fell today, indicating calm and orderly market conditions.",
-              negativeMsg: "Volatility spiked, indicating investors are hedging against near-term price swings."
+              positiveMsg: "Expected forward volatility softened today, suggesting orderly price action and reduced market anxiety.",
+              negativeMsg: "Forward volatility ticked higher, signaling that options traders are pricing in wider near-term price swings."
             }
           ].map((card, i) => {
             const val = card.data?.price || card.defaultVal;
@@ -333,31 +345,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 sm:p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-4 sm:p-5 shadow-xs hover:border-[#315EFB] transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="font-bold text-sm text-gray-900 dark:text-gray-100">
+                      <span className="font-bold text-sm text-[#172B4D] dark:text-[#F4F6FB]">
                         {card.label}
                       </span>
                       <ExplainThis term={card.term} />
                     </div>
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[#F5F7FB] dark:bg-[#1A2844] text-[#667085] dark:text-[#97A3B6]">
                       {card.exchange}
                     </span>
                   </div>
 
                   {/* Price & Change */}
                   <div className="mt-3 flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-extrabold font-mono text-gray-900 dark:text-gray-100 tabular-nums">
+                    <span className="text-xl sm:text-2xl font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] tabular-nums">
                       ₹{val.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                     <span
                       className={`inline-flex items-center space-x-0.5 px-2 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums ${
                         card.isVix
-                          ? isPos ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                          : isPos ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                          ? isPos ? "bg-[#FFF9EB] text-[#B45309]" : "bg-[#E8F7F3] text-[#14866D]"
+                          : isPos ? "bg-[#E8F7F3] text-[#14866D]" : "bg-[#FDF0F0] text-[#D94B50]"
                       }`}
                     >
                       {isPos ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
@@ -365,10 +377,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
                     </span>
                   </div>
 
-                  {/* Plain-English meaning in Beginner Mode */}
+                  {/* Plain English explanation */}
                   {isBeginner && (
-                    <div className="mt-3 pt-2.5 border-t border-gray-100 dark:border-white/[0.06] text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                      <p className="font-semibold text-gray-900 dark:text-gray-100 text-[11px] mb-0.5">
+                    <div className="mt-3 pt-2.5 border-t border-[#E5EAF2] dark:border-[#1F2E47] text-xs text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+                      <p className="font-semibold text-[#172B4D] dark:text-[#F4F6FB] text-[11px] mb-0.5">
                         What this means today:
                       </p>
                       <p>{isPos ? card.positiveMsg : card.negativeMsg}</p>
@@ -378,14 +390,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
 
                 {/* Day Range Bar in Advanced Mode */}
                 {!isBeginner && (
-                  <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.06]">
-                    <div className="flex justify-between items-center text-[10px] text-gray-500 font-mono">
+                  <div className="mt-3 pt-2 border-t border-[#E5EAF2] dark:border-[#1F2E47]">
+                    <div className="flex justify-between items-center text-[10px] text-[#667085] dark:text-[#97A3B6] font-mono">
                       <span>Low: ₹{(val * 0.995).toFixed(0)}</span>
-                      <span className="text-gray-400">Day Range</span>
+                      <span className="text-[#8993A4]">Day Range</span>
                       <span>High: ₹{(val * 1.005).toFixed(0)}</span>
                     </div>
-                    <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full mt-1 overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full w-3/5" />
+                    <div className="h-1.5 w-full bg-[#F5F7FB] dark:bg-[#0B111E] rounded-full mt-1 overflow-hidden">
+                      <div className="h-full bg-[#315EFB] rounded-full w-3/5" />
                     </div>
                   </div>
                 )}
@@ -396,86 +408,84 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       </div>
 
       {/* ───────────────────────────────────────────────────────────
-          SECTION 2: MARKET IN SIMPLE WORDS (What Happened & Why)
+          SECTION 2: MARKET IN SIMPLE WORDS
       ─────────────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 sm:p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 dark:border-white/[0.06] pb-3">
+      <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5EAF2] dark:border-[#1F2E47] pb-3">
           <div className="flex items-center space-x-2.5">
-            <div className="h-7 w-7 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-lg bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center">
               <Compass className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                Today's Market in Simple Words
+              <h2 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Today&apos;s Market in Simple Words
               </h2>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                Daily neutral briefing based on official exchange order flows
+              <span className="text-xs text-[#667085] dark:text-[#97A3B6]">
+                Objective overview based on verified exchange Bhavcopies and institutional cash flow data
               </span>
             </div>
           </div>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">
-            Updated Daily at 09:15 & 15:30 IST
+          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB]">
+            Updated Daily • Post Market Close
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          {/* Question 1: What happened? */}
-          <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-100 dark:border-white/[0.04] space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+          <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-4 border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#315EFB] dark:text-[#4D74FB]">
               1. What Happened Today?
             </span>
-            <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-              Consolidation Near Key Benchmark Levels
+            <p className="font-semibold text-[#172B4D] dark:text-[#F4F6FB] text-sm">
+              Consolidation Around Key Benchmark Levels
             </p>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              The benchmark NIFTY 50 traded within a defined range around 25,100. While IT and selected pharma stocks found buyers, profit-booking in heavyweight banks kept overall index gains measured.
+            <p className="text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+              The NIFTY 50 traded within a defined range around 25,100. While IT and selected healthcare companies saw steady institutional accumulation, profit-taking in heavyweight private banks kept headline index moves balanced.
             </p>
           </div>
 
-          {/* Question 2: Why did it happen? */}
-          <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-100 dark:border-white/[0.04] space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+          <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-4 border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#14866D]">
               2. Why Did It Happen?
             </span>
-            <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-              Domestic Funds Absorbing Foreign Selling
+            <p className="font-semibold text-[#172B4D] dark:text-[#F4F6FB] text-sm">
+              Domestic Institutions Absorbing Outflows
             </p>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Foreign institutional investors (FII) showed selective selling in high-beta cyclicals, while Indian domestic mutual funds (DII) consistently deployed retail SIP inflows to buy quality bluechips on dips.
+            <p className="text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+              Foreign institutional investors recorded modest net selling in high-beta financials, while Indian mutual funds deployed retail SIP inflows to accumulate quality bluechips on declines, stabilizing broad market breadth.
             </p>
           </div>
 
-          {/* Question 3: What to watch next? */}
-          <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-100 dark:border-white/[0.04] space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+          <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-4 border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#B45309]">
               3. What Should Investors Watch?
             </span>
-            <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-              Quarterly Earnings & Crude Oil Levels
+            <p className="font-semibold text-[#172B4D] dark:text-[#F4F6FB] text-sm">
+              Corporate Earnings &amp; Currency Stability
             </p>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Upcoming corporate earnings disclosures will test whether current stock valuations are justified. Watch Brent crude prices and US Federal Reserve policy cues for currency and inflation trends.
+            <p className="text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+              Upcoming quarterly earnings results will determine whether company valuations are supported by actual revenue expansion. Track USD/INR exchange rates and Brent crude levels for macroeconomic cues.
             </p>
           </div>
         </div>
       </div>
 
       {/* ───────────────────────────────────────────────────────────
-          SECTION 3: SECTOR PERFORMANCE (Which Industries are Strong?)
+          SECTION 3: SECTOR PERFORMANCE
       ─────────────────────────────────────────────────────────── */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
-              Sector Health — Which Industries Are Moving Today?
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-[#172B4D] dark:text-[#F4F6FB]">
+              Sector Performance — Which Industries Are Moving?
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Stocks from the same industry often move together based on sector-wide tailwinds or challenges.
+            <p className="text-xs text-[#667085] dark:text-[#97A3B6]">
+              Companies within the same industry often move together based on sector-wide demand trends.
             </p>
           </div>
           <button
+            type="button"
             onClick={() => onNavigate("sectors")}
-            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center space-x-1"
+            className="text-xs font-semibold text-[#315EFB] dark:text-[#4D74FB] hover:underline flex items-center space-x-1"
           >
             <span>View All 16 Sectors</span>
             <ChevronRight className="h-3.5 w-3.5" />
@@ -483,40 +493,45 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {friendlySectors.map((sec, idx) => (
-            <div
-              key={idx}
-              onClick={() => onNavigate("sectors")}
-              className={`rounded-2xl p-3.5 border transition cursor-pointer flex flex-col justify-between ${
-                sec.isUp
-                  ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40 hover:border-emerald-400"
-                  : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/40 hover:border-rose-400"
-              }`}
-            >
-              <div>
-                <div className="text-lg">{sec.icon}</div>
-                <h3 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-gray-100 mt-1">
-                  {sec.name}
-                </h3>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
-                  {sec.desc}
-                </p>
-              </div>
+          {friendlySectors.map((sec, idx) => {
+            const Icon = sec.icon;
+            return (
+              <div
+                key={idx}
+                onClick={() => onNavigate("sectors")}
+                className={`rounded-xl p-3.5 border transition cursor-pointer flex flex-col justify-between ${
+                  sec.isUp
+                    ? "bg-[#E8F7F3]/50 dark:bg-[#14866D]/10 border-[#B3E3D7] dark:border-[#14866D]/30 hover:border-[#14866D]"
+                    : "bg-[#FDF0F0]/50 dark:bg-[#D94B50]/10 border-[#F7C3C5] dark:border-[#D94B50]/30 hover:border-[#D94B50]"
+                }`}
+              >
+                <div>
+                  <div className="h-8 w-8 rounded-lg bg-white dark:bg-[#131C2E] flex items-center justify-center text-[#172B4D] dark:text-[#F4F6FB] shadow-xs">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <h3 className="font-bold text-xs sm:text-sm text-[#172B4D] dark:text-[#F4F6FB] mt-2">
+                    {sec.name}
+                  </h3>
+                  <p className="text-[10px] text-[#667085] dark:text-[#97A3B6] line-clamp-1 mt-0.5">
+                    {sec.desc}
+                  </p>
+                </div>
 
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-gray-200/50 dark:border-white/[0.04]">
-                <span
-                  className={`text-xs font-bold font-mono ${
-                    sec.isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
-                  }`}
-                >
-                  {sec.change}
-                </span>
-                <span className="text-[9px] uppercase font-bold text-gray-400">
-                  {sec.isUp ? "Strong" : "Soft"}
-                </span>
+                <div className="mt-3 flex items-center justify-between pt-2 border-t border-[#E5EAF2]/60 dark:border-[#1F2E47]/60">
+                  <span
+                    className={`text-xs font-bold font-mono ${
+                      sec.isUp ? "text-[#14866D]" : "text-[#D94B50]"
+                    }`}
+                  >
+                    {sec.change}
+                  </span>
+                  <span className="text-[9px] uppercase font-bold text-[#8993A4]">
+                    {sec.isUp ? "Leader" : "Lagging"}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -526,16 +541,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-[#172B4D] dark:text-[#F4F6FB]">
               Stocks Worth Researching (Educational Candidates)
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Companies that appeared in our multi-factor screening tests. Not a recommendation to buy or sell.
+            <p className="text-xs text-[#667085] dark:text-[#97A3B6]">
+              Highlighted companies identified through multi-factor fundamental screening tests. Not investment advice.
             </p>
           </div>
           <button
+            type="button"
             onClick={() => onNavigate("screener")}
-            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center space-x-1"
+            className="text-xs font-semibold text-[#315EFB] dark:text-[#4D74FB] hover:underline flex items-center space-x-1"
           >
             <span>Run Full Screener</span>
             <ChevronRight className="h-3.5 w-3.5" />
@@ -546,36 +562,34 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
           {featuredOpportunities.map((opp, idx) => (
             <div
               key={idx}
-              className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4"
+              className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 shadow-xs hover:border-[#315EFB] transition flex flex-col justify-between space-y-4"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div
-                      className={`h-10 w-10 rounded-2xl bg-gradient-to-tr ${opp.badgeBg} flex items-center justify-center font-bold text-white text-sm shadow-md`}
-                    >
+                    <div className="h-10 w-10 rounded-xl bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center font-bold text-sm">
                       {opp.avatar}
                     </div>
                     <div>
-                      <h3 className="font-extrabold text-sm sm:text-base text-gray-900 dark:text-gray-100">
+                      <h3 className="font-bold text-sm sm:text-base text-[#172B4D] dark:text-[#F4F6FB]">
                         {opp.symbol}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{opp.name}</p>
+                      <p className="text-xs text-[#667085] dark:text-[#97A3B6]">{opp.name}</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] border border-[#CAD9FB] dark:border-[#1F2E47]">
                     {opp.tag}
                   </span>
                 </div>
 
                 {/* Price and return */}
                 <div className="mt-3 flex items-baseline justify-between">
-                  <span className="text-lg font-bold font-mono text-gray-900 dark:text-gray-100 tabular-nums">
+                  <span className="text-lg font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] tabular-nums">
                     ₹{opp.price.toFixed(2)}
                   </span>
                   <span
                     className={`text-xs font-bold font-mono ${
-                      opp.isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                      opp.isUp ? "text-[#14866D]" : "text-[#D94B50]"
                     }`}
                   >
                     {opp.pct} today
@@ -584,22 +598,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
 
                 {/* Research thesis and primary risk */}
                 <div className="mt-3 space-y-2 text-xs">
-                  <div className="rounded-xl bg-gray-50 dark:bg-gray-900/60 p-2.5 border border-gray-100 dark:border-white/[0.04]">
-                    <span className="font-bold text-gray-800 dark:text-gray-200">Why Research This: </span>
-                    <span className="text-gray-600 dark:text-gray-300">{opp.thesis}</span>
+                  <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-2.5 border border-[#E5EAF2] dark:border-[#1F2E47]">
+                    <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Why Research This: </span>
+                    <span className="text-[#667085] dark:text-[#97A3B6]">{opp.thesis}</span>
                   </div>
-                  <div className="rounded-xl bg-amber-50/60 dark:bg-amber-950/20 p-2.5 border border-amber-200/60 dark:border-amber-900/30 text-amber-900 dark:text-amber-200">
+                  <div className="rounded-xl bg-[#FFF9EB] dark:bg-[#B45309]/10 p-2.5 border border-[#FEE8A2] dark:border-[#B45309]/30 text-[#B45309]">
                     <span className="font-bold">Main Risk to Check: </span>
                     <span>{opp.risk}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-gray-100 dark:border-white/[0.04] flex items-center justify-between">
-                <span className="text-[11px] text-gray-500 dark:text-gray-400">{opp.sector}</span>
+              <div className="pt-3 border-t border-[#E5EAF2] dark:border-[#1F2E47] flex items-center justify-between">
+                <span className="text-[11px] text-[#667085] dark:text-[#97A3B6]">{opp.sector}</span>
                 <button
+                  type="button"
                   onClick={() => onSelectStock(opp.symbol)}
-                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition active:scale-95 shadow-sm"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#315EFB] hover:bg-[#204AE0] text-white text-xs font-semibold transition active:scale-95 shadow-xs"
                 >
                   View Research Dossier &rarr;
                 </button>
@@ -610,21 +625,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       </div>
 
       {/* ───────────────────────────────────────────────────────────
-          SECTION 5: IMPORTANT MARKET NEWS & VERIFIED DISCLOSURES
+          SECTION 5: IMPORTANT MARKET NEWS
       ─────────────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 sm:p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/[0.06] pb-3">
+      <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-[#E5EAF2] dark:border-[#1F2E47] pb-3">
           <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
-              Important Market Developments & Regulatory News
+            <h2 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+              Important Market Developments &amp; Filings
             </h2>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              Deduplicated bulletins from exchange filings, SEBI, and accredited financial wires
+            <span className="text-xs text-[#667085] dark:text-[#97A3B6]">
+              Curated corporate releases from NSE exchange filings and regulatory disclosures
             </span>
           </div>
           <button
+            type="button"
             onClick={() => onNavigate("news")}
-            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-xs font-semibold text-[#315EFB] dark:text-[#4D74FB] hover:underline"
           >
             All Newsroom &rarr;
           </button>
@@ -632,23 +648,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {news.length === 0 ? (
-            <p className="text-xs text-gray-400 py-4">Fetching latest market updates...</p>
+            <p className="text-xs text-[#667085] py-4">Fetching verified exchange disclosures...</p>
           ) : (
             news.map((item, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/50 dark:bg-gray-900/40 p-4 space-y-2 hover:border-gray-300 dark:hover:border-white/20 transition"
+                className="rounded-xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-[#F5F7FB] dark:bg-[#0B111E] p-4 space-y-2 hover:border-[#315EFB] transition"
               >
-                <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300">
+                <div className="flex items-center justify-between text-[10px] text-[#667085] dark:text-[#97A3B6]">
+                  <span className="font-semibold bg-white dark:bg-[#131C2E] px-2 py-0.5 rounded border border-[#E5EAF2] dark:border-[#1F2E47] text-[#172B4D] dark:text-[#F4F6FB]">
                     {item.source || "Official Wire"}
                   </span>
                   <span>{item.category || "Economy"}</span>
                 </div>
-                <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-gray-100 line-clamp-2">
+                <h4 className="font-bold text-xs sm:text-sm text-[#172B4D] dark:text-[#F4F6FB] line-clamp-2">
                   {item.title}
                 </h4>
-                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-[#667085] dark:text-[#97A3B6] line-clamp-2 leading-relaxed">
                   {item.summary}
                 </p>
               </div>
@@ -658,19 +674,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       </div>
 
       {/* ───────────────────────────────────────────────────────────
-          SECTION 6: LEARN WHILE YOU EXPLORE (Educational Mini-Cards)
+          SECTION 6: LEARN WHILE YOU EXPLORE
       ─────────────────────────────────────────────────────────── */}
-      <div className="rounded-3xl border border-blue-200 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-950/20 p-5 sm:p-6 shadow-sm space-y-4">
+      <div className="rounded-2xl border border-[#CAD9FB] dark:border-[#1F2E47] bg-[#EEF3FC]/50 dark:bg-[#1A2844]/30 p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
+            <BookOpen className="h-5 w-5 text-[#315EFB] dark:text-[#4D74FB]" />
+            <h2 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
               Learn While You Explore — Key Investing Concepts
             </h2>
           </div>
           <button
+            type="button"
             onClick={() => onNavigate("learn")}
-            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-xs font-semibold text-[#315EFB] dark:text-[#4D74FB] hover:underline"
           >
             Visit Knowledge Base &rarr;
           </button>
@@ -681,19 +698,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
             { term: "NIFTY 50", label: "NIFTY 50", desc: "Top 50 companies index" },
             { term: "PE Ratio", label: "P/E Ratio", desc: "Price paid per ₹1 profit" },
             { term: "ROCE", label: "ROCE", desc: "Efficiency of total capital" },
-            { term: "Market Cap", label: "Market Cap", desc: "Total company price tag" },
+            { term: "Market Cap", label: "Market Cap", desc: "Total company market value" },
             { term: "RSI", label: "RSI Momentum", desc: "Speed of price changes" },
-            { term: "FII", label: "FII & DII", desc: "Big institutional investors" },
+            { term: "FII", label: "FII & DII", desc: "Institutional investors" },
           ].map((item, idx) => (
             <div
               key={idx}
-              className="rounded-2xl bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-white/[0.08] p-3 text-center flex flex-col justify-between shadow-sm"
+              className="rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] p-3 text-center flex flex-col justify-between shadow-xs"
             >
               <div>
-                <h4 className="font-bold text-xs text-gray-900 dark:text-gray-100">{item.label}</h4>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">{item.desc}</p>
+                <h4 className="font-bold text-xs text-[#172B4D] dark:text-[#F4F6FB]">{item.label}</h4>
+                <p className="text-[10px] text-[#667085] dark:text-[#97A3B6] mt-0.5 leading-snug">{item.desc}</p>
               </div>
-              <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-white/[0.04] flex justify-center">
+              <div className="mt-2.5 pt-2 border-t border-[#E5EAF2] dark:border-[#1F2E47] flex justify-center">
                 <ExplainThis term={item.term} />
               </div>
             </div>
@@ -702,32 +719,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       </div>
 
       {/* ───────────────────────────────────────────────────────────
-          ADVANCED MODE SECTION: Candlestick Chart & Microstructure
+          ADVANCED MODE: Candlestick Chart & Microstructure
       ─────────────────────────────────────────────────────────── */}
       {!isBeginner && (
-        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-white/[0.08]">
+        <div className="space-y-4 pt-4 border-t border-[#E5EAF2] dark:border-[#1F2E47]">
           <div className="flex items-center space-x-2">
-            <BarChart2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-              Advanced Technical Charting & Microstructure Engine
+            <BarChart2 className="h-5 w-5 text-[#315EFB] dark:text-[#4D74FB]" />
+            <h2 className="text-base sm:text-lg font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+              Advanced Technical Charting &amp; Microstructure Engine
             </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#111827] px-3.5 py-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200">
-                  Candlestick & SMA Analysis: {selectedChartSym}
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] px-3.5 py-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#172B4D] dark:text-[#F4F6FB]">
+                  Candlestick &amp; SMA Analysis: {selectedChartSym}
                 </span>
                 <div className="flex items-center space-x-1">
                   {["NIFTY", "BANKNIFTY", "RELIANCE", "TCS", "HDFCBANK"].map((sym) => (
                     <button
                       key={sym}
+                      type="button"
                       onClick={() => handleChartChange(sym)}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
                         selectedChartSym === sym
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                          ? "bg-[#315EFB] text-white"
+                          : "bg-[#F5F7FB] dark:bg-[#1A2844] text-[#667085] dark:text-[#97A3B6] hover:text-[#172B4D] dark:hover:text-[#F4F6FB]"
                       }`}
                     >
                       {sym}
@@ -739,19 +757,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
               <FinancialChart symbol={selectedChartSym} candles={chartData} height={380} />
             </div>
 
-            {/* Right: Institutional Ledger */}
+            {/* Right: Institutional Flow Ledger */}
             <div className="space-y-4">
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#111827] p-4 shadow-sm space-y-3">
-                <div className="flex items-center justify-between border-b border-gray-100 dark:border-white/[0.06] pb-2">
+              <div className="rounded-xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-4 shadow-xs space-y-3">
+                <div className="flex items-center justify-between border-b border-[#E5EAF2] dark:border-[#1F2E47] pb-2">
                   <div className="flex items-center space-x-2">
-                    <Landmark className="h-4 w-4 text-emerald-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-gray-200">
+                    <Landmark className="h-4 w-4 text-[#14866D]" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#172B4D] dark:text-[#F4F6FB]">
                       Institutional Cash Ledger
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => onNavigate("fiidii")}
-                    className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-[11px] font-semibold text-[#315EFB] dark:text-[#4D74FB] hover:underline"
                   >
                     Deep Ledger &rarr;
                   </button>
@@ -759,21 +778,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
 
                 {fiiDii?.latest_session ? (
                   <div className="space-y-2 text-xs font-mono">
-                    <div className="flex justify-between items-center p-2 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-white/[0.04]">
-                      <span className="text-gray-600 dark:text-gray-400">FII Net Cash:</span>
-                      <span className={`font-bold ${fiiDii.latest_session.fii_net >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                    <div className="flex justify-between items-center p-2.5 rounded-lg bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                      <span className="text-[#667085] dark:text-[#97A3B6]">FII Net Cash:</span>
+                      <span className={`font-bold tabular-nums ${fiiDii.latest_session.fii_net >= 0 ? "text-[#14866D]" : "text-[#D94B50]"}`}>
                         {fiiDii.latest_session.fii_net > 0 ? "+" : ""}₹{fiiDii.latest_session.fii_net.toLocaleString()} Cr
                       </span>
                     </div>
-                    <div className="flex justify-between items-center p-2 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-white/[0.04]">
-                      <span className="text-gray-600 dark:text-gray-400">DII Net Cash:</span>
-                      <span className={`font-bold ${fiiDii.latest_session.dii_net >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                    <div className="flex justify-between items-center p-2.5 rounded-lg bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                      <span className="text-[#667085] dark:text-[#97A3B6]">DII Net Cash:</span>
+                      <span className={`font-bold tabular-nums ${fiiDii.latest_session.dii_net >= 0 ? "text-[#14866D]" : "text-[#D94B50]"}`}>
                         {fiiDii.latest_session.dii_net > 0 ? "+" : ""}₹{fiiDii.latest_session.dii_net.toLocaleString()} Cr
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-400">Loading flow data...</p>
+                  <p className="text-xs text-[#667085]">Loading flow data...</p>
                 )}
               </div>
             </div>
@@ -782,17 +801,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStock, onN
       )}
 
       {/* Attribution Footer */}
-      <footer className="mt-8 border-t border-gray-200 dark:border-white/[0.08] pt-4 pb-2 text-center text-xs text-gray-500 dark:text-gray-400">
+      <footer className="mt-8 border-t border-[#E5EAF2] dark:border-[#1F2E47] pt-4 pb-2 text-center text-xs text-[#667085] dark:text-[#97A3B6]">
         <p className="flex items-center justify-center space-x-1.5">
           <span>Bharat Market Intelligence</span>
           <span>•</span>
           <span>Made with</span>
-          <span className="text-red-500">❤️</span>
+          <Heart className="h-3 w-3 text-red-500 fill-current inline mx-0.5" />
           <span>by</span>
-          <strong className="text-gray-800 dark:text-gray-200 font-semibold">Aniruddha Bhutada</strong>
+          <strong className="text-[#172B4D] dark:text-[#F4F6FB] font-semibold">Aniruddha Bhutada</strong>
         </p>
-        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-          100% Free & Open Indian Equity Research Terminal for NSE & BSE
+        <p className="text-[10px] text-[#8993A4] mt-1">
+          Independent Indian Equity Research Platform for NSE &amp; BSE
         </p>
       </footer>
     </div>

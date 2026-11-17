@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart, Sun, Moon, Palette, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import { Settings, Cpu, Clock, History, Play, CheckCircle, RefreshCw, BarChart, Sun, Moon, Palette, Globe, CheckCircle2, AlertCircle, Heart } from "lucide-react";
 import { api, getApiBase, DEFAULT_CLOUD_API } from "@/lib/api";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -494,8 +494,10 @@ export const SettingsView: React.FC = () => {
         <h3 className="text-xs font-bold uppercase tracking-wider text-gray-200">
           Bharat Market Intelligence
         </h3>
-        <p className="text-xs text-gray-300 mt-1">
-          Architected, Engineered & Developed with <span className="text-red-500">❤️</span> by{" "}
+        <p className="text-xs text-gray-300 mt-1 flex items-center justify-center space-x-1">
+          <span>Architected, Engineered &amp; Developed with</span>
+          <Heart className="h-3.5 w-3.5 text-red-500 fill-current inline mx-0.5" />
+          <span>by</span>
           <strong className="text-blue-400 font-semibold">Aniruddha Bhutada</strong>
         </p>
         <p className="text-[11px] text-gray-500 mt-1">

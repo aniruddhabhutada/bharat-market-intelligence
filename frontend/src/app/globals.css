@@ -4,40 +4,56 @@
   :root,
   [data-theme="light"],
   html.light {
-    --bg-main: #f8fafc;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f1f5f9;
-    --border-color: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --accent-blue: #2563eb;
-    --market-green: #16a34a;
-    --market-red: #dc2626;
+    --bg-main: #F5F7FB;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F8FAFC;
+    --border-color: #E5EAF2;
+    --text-primary: #172B4D;
+    --text-secondary: #667085;
+    --text-muted: #8993A4;
+    --primary-navy: #172B4D;
+    --brand-blue: #315EFB;
+    --subtle-blue: #EEF3FC;
+    --positive: #14866D;
+    --negative: #D94B50;
+    --market-green: #14866D;
+    --market-red: #D94B50;
+    --accent-blue: #315EFB;
   }
 
   [data-theme="dark"],
   html.dark {
-    --bg-main: #0b0f19;
-    --bg-card: #111827;
-    --bg-card-hover: #162032;
-    --border-color: #1f2937;
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
-    --accent-blue: #3b82f6;
-    --market-green: #10b981;
-    --market-red: #ef4444;
+    --bg-main: #0B111E;
+    --bg-card: #131C2E;
+    --bg-card-hover: #19253C;
+    --border-color: #1F2E47;
+    --text-primary: #F4F6FB;
+    --text-secondary: #97A3B6;
+    --text-muted: #6C7A8E;
+    --primary-navy: #F4F6FB;
+    --brand-blue: #4D74FB;
+    --subtle-blue: #1A2844;
+    --positive: #22C55E;
+    --negative: #F43F5E;
+    --market-green: #22C55E;
+    --market-red: #F43F5E;
+    --accent-blue: #4D74FB;
   }
 }
 
 body {
-  background-color: var(--bg-main, #f8fafc);
-  color: var(--text-primary, #0f172a);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-main, #F5F7FB);
+  color: var(--text-primary, #172B4D);
+  font-family: var(--font-inter, 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
   font-size: 15px;
   line-height: 1.6;
   overflow-x: hidden;
+}
+
+/* Tabular Numerals for financial values & tickers */
+.tabular-nums, .num, [data-tabular], .font-mono {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 /* Custom Financial Terminal Scrollbar */
@@ -56,7 +72,7 @@ body {
   background: var(--text-muted);
 }
 
-/* Pulse animation for Live Badge */
+/* Pulse animation for Live Status Badge */
 @keyframes pulse-dot {
   0%, 100% {
     opacity: 1;
@@ -81,187 +97,197 @@ body {
   scrollbar-width: none;
 }
 
-/* Institutional Glassmorphic Card Surface */
+/* Institutional Clean Card Surface */
 .glass-card {
   position: relative;
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(13, 19, 33, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(12px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
 }
 
 .glass-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.45), 0 0 15px -2px rgba(59, 130, 246, 0.15);
-}
-
-/* Ticker tape subtle shine */
-.ticker-glow {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+  transform: translateY(-1px);
+  border-color: #315EFB;
+  box-shadow: 0 4px 12px -2px rgba(49, 94, 251, 0.12);
 }
 
 /* ========================================================
-   LIGHT MODE DESIGN SYSTEM OVERRIDES
+   LIGHT MODE DESIGN SYSTEM OVERRIDES (Default)
    ======================================================== */
 html.light,
 html.light body {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: #F5F7FB !important;
+  color: #172B4D !important;
 }
 
-/* Background remapping */
+/* Background remapping for light mode */
 html.light .bg-\[\#0B0F19\],
 html.light .bg-\[\#0b0f19\] {
-  background-color: #f8fafc !important;
+  background-color: #F5F7FB !important;
 }
 
-html.light .bg-\[\#111827\] {
-  background-color: #ffffff !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
-}
-
-html.light .bg-gray-900,
-html.light .bg-gray-900\/90,
+html.light .bg-\[\#111827\],
 html.light .bg-gray-900\/80,
+html.light .bg-gray-900\/90,
 html.light .bg-gray-900\/60,
 html.light .bg-gray-900\/50 {
-  background-color: #f1f5f9 !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.05) !important;
 }
 
 html.light .bg-gray-950,
 html.light .bg-gray-950\/80,
-html.light .bg-gray-950\/60 {
-  background-color: #e2e8f0 !important;
+html.light .bg-gray-950\/60,
+html.light .bg-gray-950\/50,
+html.light .bg-gray-950\/40 {
+  background-color: #EEF3FC !important;
+}
+
+html.light .bg-gray-900 {
+  background-color: #FFFFFF !important;
 }
 
 html.light .bg-gray-800,
 html.light .bg-gray-800\/80,
 html.light .bg-gray-800\/60,
 html.light .bg-gray-800\/50 {
-  background-color: #e2e8f0 !important;
+  background-color: #F5F7FB !important;
 }
 
 /* Border remapping */
 html.light .border-gray-800,
+html.light .border-gray-800\/80,
 html.light .border-gray-800\/60,
 html.light .border-gray-700,
-html.light .border-gray-700\/60 {
-  border-color: #e2e8f0 !important;
+html.light .border-gray-700\/60,
+html.light .border-white\/\[0\.08\],
+html.light .border-white\/\[0\.06\],
+html.light .border-white\/\[0\.1\] {
+  border-color: #E5EAF2 !important;
 }
 
 /* Typography remapping */
 html.light .text-gray-100,
 html.light .text-gray-200 {
-  color: #0f172a !important;
+  color: #172B4D !important;
 }
 
 html.light .text-gray-300,
 html.light .text-gray-400 {
-  color: #475569 !important;
+  color: #667085 !important;
 }
 
 html.light .text-gray-500 {
-  color: #64748b !important;
+  color: #8993A4 !important;
 }
 
-/* Preserve White text for solid colored buttons */
+/* Solid colored buttons preserve white text */
 html.light .bg-blue-600,
 html.light .bg-blue-600 *,
 html.light .bg-emerald-600,
 html.light .bg-emerald-600 *,
 html.light .bg-red-600,
 html.light .bg-red-600 * {
-  color: #ffffff !important;
+  color: #FFFFFF !important;
 }
 
 /* Hover effects */
 html.light .hover\:bg-gray-800:hover,
 html.light .hover\:bg-gray-700:hover,
 html.light .hover\:bg-\[\#162032\]:hover {
-  background-color: #f1f5f9 !important;
+  background-color: #EEF3FC !important;
 }
 
 /* Header & Sidebar Light styling */
 html.light header {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-color: #e2e8f0 !important;
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #E5EAF2 !important;
 }
 
 html.light aside {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
+  background-color: #FFFFFF !important;
+  border-color: #E5EAF2 !important;
 }
 
 /* Form Controls */
 html.light input,
 html.light select,
 html.light textarea {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #0f172a !important;
+  background-color: #FFFFFF !important;
+  border-color: #E5EAF2 !important;
+  color: #172B4D !important;
 }
 
 html.light input::placeholder,
 html.light textarea::placeholder {
-  color: #94a3b8 !important;
+  color: #8993A4 !important;
 }
 
-/* Market Badges */
+/* Market Positive / Negative Movement Badges */
 html.light .bg-emerald-950,
 html.light .bg-emerald-950\/80,
-html.light .bg-emerald-950\/40 {
-  background-color: #f0fdf4 !important;
-  border-color: #bbf7d0 !important;
+html.light .bg-emerald-950\/60,
+html.light .bg-emerald-950\/40,
+html.light .bg-emerald-500\/10 {
+  background-color: #E8F7F3 !important;
+  border-color: #B3E3D7 !important;
 }
 
-html.light .text-emerald-400 {
-  color: #16a34a !important;
+html.light .text-emerald-400,
+html.light .text-emerald-500 {
+  color: #14866D !important;
 }
 
 html.light .bg-red-950,
 html.light .bg-red-950\/80,
-html.light .bg-red-950\/40 {
-  background-color: #fef2f2 !important;
-  border-color: #fecaca !important;
+html.light .bg-red-950\/60,
+html.light .bg-red-950\/40,
+html.light .bg-rose-500\/10 {
+  background-color: #FDF0F0 !important;
+  border-color: #F7C3C5 !important;
 }
 
-html.light .text-red-400 {
-  color: #dc2626 !important;
+html.light .text-red-400,
+html.light .text-rose-400,
+html.light .text-red-500 {
+  color: #D94B50 !important;
 }
 
 html.light .bg-amber-950,
-html.light .bg-amber-950\/80 {
-  background-color: #fffbeb !important;
-  border-color: #fde68a !important;
+html.light .bg-amber-950\/80,
+html.light .bg-amber-500\/10 {
+  background-color: #FFF9EB !important;
+  border-color: #FEE8A2 !important;
 }
 
 html.light .text-amber-400,
 html.light .text-amber-300 {
-  color: #d97706 !important;
+  color: #B45309 !important;
 }
 
 /* SVG Financial Charts in Light Mode */
 html.light svg line {
-  stroke: #e2e8f0 !important;
+  stroke: #E5EAF2 !important;
 }
 
 html.light svg text {
-  fill: #64748b !important;
+  fill: #667085 !important;
 }
 
 /* Mobile Nav Bar in Light Mode */
-html.light nav.fixed {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-color: #e2e8f0 !important;
+html.light nav.fixed,
+html.light .safe-area-inset-bottom {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #E5EAF2 !important;
 }
 
 /* Modals */
-html.light .bg-black\/70 {
-  background-color: rgba(15, 23, 42, 0.5) !important;
+html.light .bg-black\/70,
+html.light .bg-black\/60 {
+  background-color: rgba(23, 43, 77, 0.4) !important;
 }
 
 /* Skeleton loader animation */
@@ -271,20 +297,19 @@ html.light .bg-black\/70 {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg, #F5F7FB 25%, #E5EAF2 50%, #F5F7FB 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.6s infinite ease-in-out;
   border-radius: 8px;
 }
 
 html.dark .skeleton {
-  background: linear-gradient(90deg, #111827 25%, #1e293b 50%, #111827 75%);
+  background: linear-gradient(90deg, #131C2E 25%, #1F2E47 50%, #131C2E 75%);
   background-size: 200% 100%;
 }
 
 /* Focus accessibility */
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--accent-blue, #2563eb);
+  outline: 2px solid #315EFB;
   outline-offset: 2px;
 }
-

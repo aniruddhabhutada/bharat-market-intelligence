@@ -2,21 +2,23 @@
 
 import React, { useState } from "react";
 import {
-  Home,
-  TrendingUp,
+  House,
+  ChartNoAxesCombined,
   Search,
-  Star,
+  Bookmark,
   Menu,
   X,
-  BarChart2,
-  Globe,
-  SunMedium,
-  Landmark,
+  GraduationCap,
+  BarChart3,
+  ChartLine,
+  Scale,
   PieChart,
-  FolderOpen,
-  Briefcase,
-  Settings,
+  TrendingUp,
   Newspaper,
+  Wallet,
+  FileText,
+  Settings,
+  LucideIcon
 } from "lucide-react";
 import { ViewType } from "./Sidebar";
 
@@ -27,25 +29,31 @@ interface MobileNavProps {
 }
 
 /* ─── Bottom tab bar items ───────────────────────────────────────────────── */
-const MOBILE_NAV = [
-  { id: "dashboard" as ViewType, label: "Home",      icon: Home },
-  { id: "live"      as ViewType, label: "Market",    icon: TrendingUp },
-  { id: "screener"  as ViewType, label: "Stocks",    icon: Search },
-  { id: "watchlist" as ViewType, label: "Watchlist", icon: Star },
+const PRIMARY_MOBILE_TABS: { id: ViewType; label: string; icon: LucideIcon }[] = [
+  { id: "dashboard", label: "Home",      icon: House },
+  { id: "live",      label: "Market",    icon: ChartNoAxesCombined },
+  { id: "screener",  label: "Explore",   icon: Search },
+  { id: "watchlist", label: "Watchlist", icon: Bookmark },
 ];
 
 /* ─── Bottom sheet "More" drawer items ──────────────────────────────────── */
-const MORE_NAV: { id: ViewType; emoji: string; label: string; sub: string }[] = [
-  { id: "learn",     emoji: "💡", label: "Learn Investing",      sub: "Plain-English concepts & terms" },
-  { id: "stock",     emoji: "📊", label: "Deep Stock Analysis",  sub: "In-depth stock research" },
-  { id: "indices",   emoji: "🌐", label: "Market Indices",       sub: "NIFTY, SENSEX & more" },
-  { id: "premarket", emoji: "🌅", label: "Pre-Market Intel",     sub: "Before market opens" },
-  { id: "fiidii",    emoji: "📈", label: "FII / DII Flows",      sub: "Institutional investor activity" },
-  { id: "sectors",   emoji: "🗂️", label: "Sector Heatmap",       sub: "Sector-wise performance" },
-  { id: "news",      emoji: "📰", label: "Market News",          sub: "Latest financial news" },
-  { id: "portfolio", emoji: "💼", label: "Portfolio Tracker",    sub: "Your holdings & P&L" },
-  { id: "reports",   emoji: "📁", label: "Research Reports",     sub: "In-depth analyst reports" },
-  { id: "settings",  emoji: "⚙️", label: "Settings",             sub: "App preferences" },
+interface MoreItem {
+  id: ViewType;
+  label: string;
+  sub: string;
+  icon: LucideIcon;
+}
+
+const MORE_NAV: MoreItem[] = [
+  { id: "learn",     label: "Learn Investing",     sub: "Plain-English concepts & terms", icon: GraduationCap },
+  { id: "stock",     label: "Stock Analysis",      sub: "In-depth equity dossiers",       icon: BarChart3 },
+  { id: "indices",   label: "Technical Analysis",  sub: "Support, resistance & trends",   icon: ChartLine },
+  { id: "fiidii",    label: "FII / DII Flows",     sub: "Institutional cash movements",   icon: TrendingUp },
+  { id: "sectors",   label: "Sector Heatmap",      sub: "Industry rotation metrics",      icon: PieChart },
+  { id: "news",      label: "Market News",         sub: "Verified news & SEBI filings",   icon: Newspaper },
+  { id: "portfolio", label: "Portfolio Research",  sub: "Track simulated equity holdings",icon: Wallet },
+  { id: "reports",   label: "Market Reports",      sub: "Morning and evening briefs",     icon: FileText },
+  { id: "settings",  label: "Settings",            sub: "Preferences & API config",       icon: Settings },
 ];
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -60,43 +68,36 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     setDrawerOpen(false);
   };
 
-  // Check if the current view is one shown in the bottom bar or the More drawer
   const isMoreActive = MORE_NAV.some((item) => item.id === currentView);
 
   return (
     <>
       {/* ── Bottom Tab Bar ─────────────────────────────────────────────── */}
       <div className="fixed bottom-0 inset-x-0 z-40 md:hidden">
-        <nav className="flex h-16 items-center justify-around border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0B0F19] px-1 safe-area-inset-bottom">
-          {MOBILE_NAV.map(({ id, label, icon: Icon }) => {
+        <nav className="flex h-16 items-center justify-around border-t border-[#E5EAF2] dark:border-[#1F2E47] bg-white/95 dark:bg-[#131C2E]/95 backdrop-blur-md px-1 safe-area-inset-bottom">
+          {PRIMARY_MOBILE_TABS.map(({ id, label, icon: Icon }) => {
             const isActive = currentView === id;
             return (
               <button
                 key={id}
+                type="button"
                 onClick={() => handleSelect(id)}
-                className="relative flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-all duration-200 active:scale-95"
+                className="relative flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-all active:scale-95"
               >
-                {/* Active pill behind icon */}
                 <div
                   className={`flex h-8 w-10 items-center justify-center rounded-full transition-colors ${
                     isActive
-                      ? "bg-blue-100 dark:bg-blue-500/20"
-                      : "bg-transparent"
+                      ? "bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB]"
+                      : "text-[#667085] dark:text-[#97A3B6]"
                   }`}
                 >
-                  <Icon
-                    className={`h-5 w-5 transition-colors ${
-                      isActive
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  />
+                  <Icon className="h-5 w-5" />
                 </div>
                 <span
-                  className={`text-[10px] font-medium ${
+                  className={`text-[10px] tracking-tight ${
                     isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-500 dark:text-gray-400"
+                      ? "font-bold text-[#315EFB] dark:text-[#4D74FB]"
+                      : "text-[#667085] dark:text-[#97A3B6]"
                   }`}
                 >
                   {label}
@@ -105,31 +106,26 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             );
           })}
 
-          {/* More button */}
+          {/* More Button */}
           <button
+            type="button"
             onClick={() => setDrawerOpen(true)}
-            className="relative flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-all duration-200 active:scale-95"
+            className="relative flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-all active:scale-95"
           >
             <div
               className={`flex h-8 w-10 items-center justify-center rounded-full transition-colors ${
                 isMoreActive
-                  ? "bg-blue-100 dark:bg-blue-500/20"
-                  : "bg-transparent"
+                  ? "bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB]"
+                  : "text-[#667085] dark:text-[#97A3B6]"
               }`}
             >
-              <Menu
-                className={`h-5 w-5 ${
-                  isMoreActive
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              />
+              <Menu className="h-5 w-5" />
             </div>
             <span
-              className={`text-[10px] font-medium ${
+              className={`text-[10px] tracking-tight ${
                 isMoreActive
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
+                  ? "font-bold text-[#315EFB] dark:text-[#4D74FB]"
+                  : "text-[#667085] dark:text-[#97A3B6]"
               }`}
             >
               More
@@ -138,71 +134,69 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         </nav>
       </div>
 
-      {/* ── Bottom Sheet Drawer ─────────────────────────────────────────── */}
+      {/* ── Slide-up "More" Drawer ────────────────────────────────────────── */}
       {drawerOpen && (
-        <>
-          {/* Backdrop */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex flex-col justify-end bg-[#172B4D]/50 backdrop-blur-xs md:hidden"
+        >
+          {/* Backdrop click area */}
           <div
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden"
+            className="flex-1"
             onClick={() => setDrawerOpen(false)}
+            aria-label="Close drawer"
           />
 
-          {/* Sheet */}
-          <div className="fixed bottom-0 inset-x-0 z-50 rounded-t-2xl bg-white dark:bg-[#0F1623] border-t border-gray-200 dark:border-gray-700 md:hidden">
-            {/* Handle & header */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <div className="flex flex-col">
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
-                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                  More Tools
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Research &amp; Analysis
-                </span>
+          {/* Drawer content */}
+          <div className="rounded-t-2xl border-t border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-4 shadow-2xl max-h-[75vh] flex flex-col animate-in slide-in-from-bottom-6 duration-200">
+            {/* Header with pill handle */}
+            <div className="flex flex-col items-center pb-3 border-b border-[#E5EAF2] dark:border-[#1F2E47] relative">
+              <div className="h-1 w-10 rounded-full bg-[#E5EAF2] dark:bg-[#1F2E47] mb-2" />
+              <div className="w-full flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[#172B4D] dark:text-[#F4F6FB] tracking-tight">
+                    Research &amp; Tools
+                  </h3>
+                  <p className="text-[11px] text-[#667085] dark:text-[#97A3B6]">
+                    Select a section to explore
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(false)}
+                  className="rounded-lg p-1 text-[#667085] hover:text-[#172B4D] dark:hover:text-[#F4F6FB]"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
 
-            {/* More nav items */}
-            <div className="px-3 pb-6 pt-1 grid grid-cols-1 gap-1 max-h-[60vh] overflow-y-auto">
-              {MORE_NAV.map((item) => {
-                const isActive = currentView === item.id;
+            {/* Scrollable list */}
+            <div className="overflow-y-auto py-2 space-y-1 divide-y divide-[#E5EAF2]/60 dark:divide-[#1F2E47]/60 no-scrollbar">
+              {MORE_NAV.map(({ id, label, sub, icon: Icon }) => {
+                const isActive = currentView === id;
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => handleSelect(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-left transition-all active:scale-[0.98] ${
+                    key={id}
+                    type="button"
+                    onClick={() => handleSelect(id)}
+                    className={`w-full flex items-center space-x-3 px-3 py-3 text-left transition rounded-xl ${
                       isActive
-                        ? "bg-blue-50 dark:bg-blue-500/15 ring-1 ring-blue-100 dark:ring-blue-500/20"
-                        : "hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+                        ? "bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB]"
+                        : "hover:bg-[#F5F7FB] dark:hover:bg-[#19253C] text-[#172B4D] dark:text-[#F4F6FB]"
                     }`}
                   >
-                    <div
-                      className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-lg ${
-                        isActive
-                          ? "bg-blue-100 dark:bg-blue-500/20"
-                          : "bg-gray-100 dark:bg-white/[0.06]"
-                      }`}
-                    >
-                      {item.emoji}
+                    <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-lg bg-[#F5F7FB] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB]">
+                      <Icon className="h-4 w-4" />
                     </div>
-                    <div>
-                      <div
-                        className={`text-sm font-semibold ${
-                          isActive
-                            ? "text-blue-700 dark:text-blue-300"
-                            : "text-gray-800 dark:text-gray-100"
-                        }`}
-                      >
-                        {item.label}
+                    <div className="min-w-0 flex-1">
+                      <div className={`text-xs font-semibold ${isActive ? "text-[#315EFB] dark:text-[#4D74FB]" : ""}`}>
+                        {label}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {item.sub}
+                      <div className="text-[11px] text-[#667085] dark:text-[#97A3B6] truncate">
+                        {sub}
                       </div>
                     </div>
                   </button>
@@ -210,7 +204,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               })}
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

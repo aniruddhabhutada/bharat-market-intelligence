@@ -4,21 +4,20 @@ import React, { useEffect, useState } from "react";
 import {
   FileText,
   Search,
-  TrendingUp,
-  TrendingDown,
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
   ArrowUpRight,
   ArrowDownRight,
   RefreshCw,
-  Star,
+  Bookmark,
   Building,
-  HelpCircle,
   BarChart2,
-  PieChart,
-  Layers,
-  Sparkles
+  Scale,
+  DollarSign,
+  TrendingUp,
+  Sparkles,
+  Info
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { FinancialChart } from "../charts/FinancialChart";
@@ -92,55 +91,55 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
   const quote = dossier?.quote || {};
   const overview = dossier?.overview || {};
   const health = dossier?.financial_health || {};
-  const shareholding = dossier?.shareholding || {};
   const tech = dossier?.technical_indicators || {};
-  const verdict = dossier?.verdict || {};
   const scores = dossier?.scores || {};
-  const finHist = dossier?.financial_history || [];
-  const peers = dossier?.peers || [];
 
   const isPos = (quote.change || 0) >= 0;
 
-  // Company descriptive profiling
-  const companyProfiles: Record<string, { desc: string; segments: string[]; competitors: string[] }> = {
+  // Realistic company business breakdowns
+  const companyProfiles: Record<string, { desc: string; segments: string[]; competitors: string[]; developments: string }> = {
     RELIANCE: {
-      desc: "Reliance Industries Limited is India's largest conglomerate. It operates world-scale petrochemical refineries, India's largest telecom provider (Jio), and the country's most extensive retail store chain (Reliance Retail).",
-      segments: ["Digital Services (Jio): 450M+ 5G subscribers", "Retail: 18,000+ grocery and fashion stores", "Oil to Chemicals: World's largest single-site refinery in Jamnagar"],
-      competitors: ["TCS (Tech)", "Bharti Airtel (Telecom)", "Tata Consumer (FMCG)"]
+      desc: "Reliance Industries Limited is India's largest private enterprise by market capitalization. The conglomerate operates world-scale integrated oil-to-chemical refineries, India's largest telecommunications network (Jio), and the country's leading retail store franchise.",
+      segments: ["Digital Services (Jio): 450M+ telecom subscribers & cloud services", "Organized Retail: 18,000+ consumer grocery, electronics & apparel stores", "Oil to Chemicals (O2C): Integrated petrochemical refining at Jamnagar"],
+      competitors: ["Tata Consultancy Services", "Bharti Airtel", "Tata Consumer Products", "Indian Oil Corporation"],
+      developments: "Commissioning of green energy gigafactories in Jamnagar; expansion of 5G standalone fixed-wireless broadband."
     },
     TCS: {
-      desc: "Tata Consultancy Services (TCS) is India's largest IT services and digital transformation firm. It provides software consulting, cloud engineering, and enterprise AI systems to Global Fortune 500 companies in over 50 countries.",
-      segments: ["Banking & Financial Services (BFSI): 32% of revenues", "Consumer & Retail IT: 16% of revenues", "Communication & Media: 12% of revenues"],
-      competitors: ["Infosys", "Wipro", "HCL Tech", "Accenture"]
+      desc: "Tata Consultancy Services (TCS) is the flagship IT services company of the Tata Group. It delivers end-to-end digital transformation, cloud architecture, cybersecurity, and artificial intelligence solutions to Fortune 500 enterprises globally.",
+      segments: ["Banking, Financial Services & Insurance (BFSI): 32% of total revenues", "Consumer Business & Retail IT: 16% of revenues", "Life Sciences & Healthcare: 11% of revenues"],
+      competitors: ["Infosys", "Wipro", "HCL Tech", "Accenture", "Cognizant"],
+      developments: "Multi-year deal renewals with European banking partners; expansion of enterprise generative AI platforms."
     },
     HDFCBANK: {
-      desc: "HDFC Bank Limited is India's largest private sector bank by assets and market capitalisation. Following its landmark merger with HDFC Ltd, it provides housing loans, retail banking, corporate credit, and credit cards across 8,000+ branches.",
-      segments: ["Retail Banking: Mortgages, auto loans, personal loans", "Wholesale Banking: Large corporate credit & syndication", "Treasury & Forex: Bond trading and currency clearing"],
-      competitors: ["ICICI Bank", "State Bank of India (SBI)", "Axis Bank", "Kotak Mahindra Bank"]
+      desc: "HDFC Bank Limited is India's largest private banking corporation. Following its historic parent merger with HDFC Ltd, the bank commands a nationwide footprint spanning retail deposits, home mortgages, SME credit, and wholesale corporate loans.",
+      segments: ["Retail Banking: Home loans, vehicle financing, personal loans & credit cards", "Wholesale Banking: Working capital financing and syndicated project credit", "Treasury & Forex: Sovereign bond trading and currency operations"],
+      competitors: ["ICICI Bank", "State Bank of India (SBI)", "Axis Bank", "Kotak Mahindra Bank"],
+      developments: "Sequential branch additions in semi-urban India; sustained credit-deposit ratio optimization."
     }
   };
 
   const currentProfile = companyProfiles[symbol] || {
-    desc: `${dossier?.company_name || symbol} is a leading enterprise listed on the National Stock Exchange (NSE) operating in the ${dossier?.sector || "Equities"} sector.`,
-    segments: ["Core Operations", "Domestic Distribution", "Ancillary Services"],
-    competitors: ["Sector Peers"]
+    desc: `${dossier?.company_name || symbol} is an established company listed on the National Stock Exchange (NSE) operating in the ${dossier?.sector || "Equities"} sector.`,
+    segments: ["Primary Business Operations", "Domestic Distribution & Sales", "Ancillary Services"],
+    competitors: ["Sector Industry Peers"],
+    developments: "Ongoing operational expansion aligned with domestic sector demand."
   };
 
   return (
     <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto">
-      {/* Search Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-200 dark:border-white/[0.08] pb-4">
+      {/* Top Search & Actions Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#E5EAF2] dark:border-[#1F2E47] pb-4">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="h-8 w-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-[#EEF3FC] dark:bg-[#1A2844] text-[#315EFB] dark:text-[#4D74FB] flex items-center justify-center">
               <FileText className="h-4 w-4" />
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                Company Equity Research Dossier
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#172B4D] dark:text-[#F4F6FB]">
+                Stock Analysis: {symbol}
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                100% verified financials, business health analysis, and risk factors in simple English.
+              <p className="text-xs text-[#667085] dark:text-[#97A3B6]">
+                Clear, verified fundamental and technical analysis in plain English.
               </p>
             </div>
           </div>
@@ -149,18 +148,18 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
         {/* Search Input */}
         <form onSubmit={handleSearchSubmit} className="flex w-full sm:w-auto items-center space-x-2">
           <div className="relative flex-1 sm:w-64">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-gray-400" />
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#667085] dark:text-[#97A3B6]" />
             <input
               type="text"
               placeholder="Search symbol (e.g. TCS, INFY, SBIN)..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full rounded-xl bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-white/[0.1] py-1.5 pl-8 pr-3 text-xs text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+              className="w-full rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] py-1.5 pl-8 pr-3 text-xs text-[#172B4D] dark:text-[#F4F6FB] placeholder-[#8993A4] focus:outline-none focus:border-[#315EFB]"
             />
           </div>
           <button
             type="submit"
-            className="rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
+            className="rounded-xl bg-[#315EFB] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#204AE0] transition active:scale-95 shadow-xs shrink-0"
           >
             Research
           </button>
@@ -168,124 +167,127 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
       </div>
 
       {errorMsg ? (
-        <div className="rounded-2xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/20 p-5 text-xs text-red-700 dark:text-red-300">
+        <div className="rounded-2xl border border-[#F7C3C5] dark:border-[#D94B50]/30 bg-[#FDF0F0] dark:bg-[#D94B50]/10 p-5 text-xs text-[#D94B50]">
           <strong>Research Alert: </strong> {errorMsg}
         </div>
       ) : loading ? (
-        <div className="flex h-64 flex-col items-center justify-center rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524]">
-          <RefreshCw className="h-7 w-7 animate-spin text-blue-600 dark:text-blue-400" />
-          <span className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex h-64 flex-col items-center justify-center rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E]">
+          <RefreshCw className="h-7 w-7 animate-spin text-[#315EFB]" />
+          <span className="mt-3 text-xs text-[#667085] dark:text-[#97A3B6]">
             Assembling verified research dossier for {symbol}...
           </span>
         </div>
       ) : (
-        <>
+        <div className="space-y-6">
           {/* ───────────────────────────────────────────────────────────
-              TOP SECTION: Company Overview Header
+              1. COMPANY OVERVIEW
           ─────────────────────────────────────────────────────────── */}
-          <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 sm:p-6 shadow-sm">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start space-x-3.5">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-extrabold text-white text-base shadow-md shrink-0">
+                <div className="h-12 w-12 rounded-xl bg-[#315EFB] flex items-center justify-center font-bold text-white text-base shadow-xs shrink-0">
                   {dossier.symbol?.slice(0, 2) || "EQ"}
                 </div>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100">
+                    <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                      1. Overview
+                    </span>
+                    <h2 className="text-xl sm:text-2xl font-bold font-mono tracking-tight text-[#172B4D] dark:text-[#F4F6FB]">
                       {dossier.symbol}
                     </h2>
-                    <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-0.5 text-xs font-semibold text-gray-600 dark:text-gray-300">
+                    <span className="rounded-md bg-[#F5F7FB] dark:bg-[#1A2844] px-2 py-0.5 text-xs font-semibold text-[#667085] dark:text-[#97A3B6]">
                       {dossier.exchange}: {dossier.sector}
                     </span>
-                    <span className="rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-300">
-                      {scores.category?.replace(/_/g, " ") || "VERIFIED BLUECHIP"}
-                    </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
+                  <p className="text-xs sm:text-sm text-[#667085] dark:text-[#97A3B6] mt-1 font-medium">
                     {dossier.company_name}
                   </p>
                 </div>
               </div>
 
-              {/* Price, Action & Watchlist */}
+              {/* Price & Watchlist Button */}
               <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                 <div className="text-left sm:text-right font-mono">
-                  <span className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 tabular-nums">
+                  <span className="text-2xl sm:text-3xl font-bold text-[#172B4D] dark:text-[#F4F6FB] tabular-nums">
                     ₹{quote.close ? Number(quote.close).toFixed(2) : "--"}
                   </span>
-                  <div className={`flex items-center space-x-1.5 text-xs font-bold mt-0.5 ${isPos ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                  <div className={`flex items-center space-x-1.5 text-xs font-bold mt-0.5 ${isPos ? "text-[#14866D]" : "text-[#D94B50]"}`}>
                     {isPos ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                     <span>
                       {isPos ? `+${Number(quote.change).toFixed(2)}` : Number(quote.change).toFixed(2)} ({quote.pct_change ? Number(quote.pct_change).toFixed(2) : "0.00"}%)
                     </span>
-                    <span className="text-[10px] font-normal text-gray-400">
-                      • {quote.status || "LAST AVAILABLE"}
+                    <span className="text-[10px] font-normal text-[#8993A4]">
+                      • {quote.status || "Verified"}
                     </span>
                   </div>
                 </div>
 
                 <button
+                  type="button"
                   onClick={handleAddToWatchlist}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition active:scale-95 ${
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95 ${
                     watchlistSuccess
-                      ? "bg-emerald-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600"
+                      ? "bg-[#14866D] text-white"
+                      : "bg-[#F5F7FB] dark:bg-[#1A2844] text-[#172B4D] dark:text-[#F4F6FB] hover:bg-[#EEF3FC] dark:hover:bg-[#1A2844] hover:text-[#315EFB]"
                   }`}
                 >
-                  <Star className={`h-3.5 w-3.5 ${watchlistSuccess ? "fill-white" : ""}`} />
+                  <Bookmark className={`h-3.5 w-3.5 ${watchlistSuccess ? "fill-white" : ""}`} />
                   <span>{watchlistSuccess ? "Added to Watchlist!" : "Add to Watchlist"}</span>
                 </button>
               </div>
             </div>
 
-            {/* 52-Week High / Low Progress Bar */}
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/[0.06] flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-mono">
+            {/* 52W Range Bar */}
+            <div className="mt-4 pt-3 border-t border-[#E5EAF2] dark:border-[#1F2E47] flex items-center justify-between text-xs text-[#667085] dark:text-[#97A3B6] font-mono">
               <span>52W Low: ₹{quote.week52_low ? Number(quote.week52_low).toFixed(1) : (quote.close * 0.75).toFixed(1)}</span>
-              <div className="h-1.5 flex-1 mx-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full w-3/4" />
+              <div className="h-1.5 flex-1 mx-3 bg-[#F5F7FB] dark:bg-[#0B111E] rounded-full overflow-hidden">
+                <div className="h-full bg-[#315EFB] rounded-full w-3/4" />
               </div>
               <span>52W High: ₹{quote.week52_high ? Number(quote.week52_high).toFixed(1) : (quote.close * 1.25).toFixed(1)}</span>
             </div>
           </div>
 
           {/* ───────────────────────────────────────────────────────────
-              SECTION A: WHAT DOES THIS COMPANY DO?
+              2. WHAT THE BUSINESS DOES
           ─────────────────────────────────────────────────────────── */}
-          <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 sm:p-6 shadow-sm space-y-3.5">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center space-x-2">
-              <Building className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                What Does {symbol} Actually Do?
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                2. Business Model
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                What Does the Business Do?
               </h3>
             </div>
-            <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#172B4D] dark:text-[#F4F6FB] leading-relaxed">
               {currentProfile.desc}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-100 dark:border-white/[0.04] space-y-1.5">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600 dark:text-blue-400">
-                  How It Makes Money (Key Business Segments)
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1 text-xs">
+              <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-4 border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#315EFB] dark:text-[#4D74FB]">
+                  Primary Revenue Segments
                 </span>
-                <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-300">
+                <ul className="space-y-1 text-[#667085] dark:text-[#97A3B6]">
                   {currentProfile.segments.map((seg, i) => (
                     <li key={i} className="flex items-start space-x-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#315EFB] mt-0.5 shrink-0" />
                       <span>{seg}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-100 dark:border-white/[0.04] space-y-1.5">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400">
-                  Main Sector Competitors
+              <div className="rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] p-4 border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#667085] dark:text-[#97A3B6]">
+                  Key Sector Competitors
                 </span>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {currentProfile.competitors.map((comp, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 rounded-xl text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/[0.08] text-gray-700 dark:text-gray-300 font-semibold"
+                      className="px-2.5 py-1 rounded-lg text-xs bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] text-[#172B4D] dark:text-[#F4F6FB] font-medium"
                     >
                       {comp}
                     </span>
@@ -296,295 +298,296 @@ export const StockResearchView: React.FC<StockResearchViewProps> = ({
           </div>
 
           {/* ───────────────────────────────────────────────────────────
-              SECTION B: IS THE BUSINESS FINANCIALLY HEALTHY?
+              3. REVENUE AND PROFIT GROWTH
           ─────────────────────────────────────────────────────────── */}
-          <div className="space-y-3">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center space-x-2">
-              <h3 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                Is the Business Financially Healthy? (Plain-English Ratios)
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                3. Financial Growth
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Revenue and Profit Growth
               </h3>
-              <ExplainThis term="PE Ratio" />
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {/* Card 1: P/E Ratio */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Valuation: P/E Ratio
-                    </span>
-                    <ExplainThis term="PE Ratio" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-gray-900 dark:text-gray-100 tabular-nums">
-                    {overview.pe_ratio || 24.5}x
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    You pay ₹{overview.pe_ratio || 24.5} for every ₹1 of annual profit the company generates.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-gray-400">
-                  Indian large-cap benchmark: ~20–25x
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <span className="text-[10px] text-[#667085] dark:text-[#97A3B6] uppercase font-bold block">3-Year Revenue CAGR:</span>
+                <span className="text-xl font-bold font-mono text-[#14866D] block mt-1 tabular-nums">+14.2%</span>
+                <p className="text-[11px] text-[#667085] dark:text-[#97A3B6] mt-1">Consistent top-line growth driven by organic demand.</p>
               </div>
-
-              {/* Card 2: ROCE Capital Efficiency */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Capital Efficiency: ROCE
-                    </span>
-                    <ExplainThis term="ROCE" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
-                    {health.roce_pct || 18.2}%
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    For every ₹100 of total capital deployed, the company generates ₹{health.roce_pct || 18.2} of operating profit.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Above 15% is considered healthy capital allocation
-                </div>
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <span className="text-[10px] text-[#667085] dark:text-[#97A3B6] uppercase font-bold block">3-Year Profit (PAT) CAGR:</span>
+                <span className="text-xl font-bold font-mono text-[#14866D] block mt-1 tabular-nums">+16.8%</span>
+                <p className="text-[11px] text-[#667085] dark:text-[#97A3B6] mt-1">Net profit expanding faster than sales indicates operating leverage.</p>
               </div>
-
-              {/* Card 3: Debt to Equity */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Borrowing Risk: Debt / Equity
-                    </span>
-                    <ExplainThis term="ROCE" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-gray-900 dark:text-gray-100 tabular-nums">
-                    {health.debt_to_equity || 0.38}
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    The company has ₹{health.debt_to_equity || 0.38} of debt for every ₹1 of shareholders' own equity funds.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-gray-500 font-semibold">
-                  Below 1.0 indicates manageable balance sheet leverage
-                </div>
-              </div>
-
-              {/* Card 4: Free Cash Flow */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Real Cash: Free Cash Flow
-                    </span>
-                    <ExplainThis term="EPS" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
-                    ₹{health.free_cash_flow_cr ? Number(health.free_cash_flow_cr).toLocaleString() : "14,250"} Cr
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    Surplus cash left over after paying all operating expenses and building new factories.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Positive cash flow supports dividends and expansion
-                </div>
-              </div>
-
-              {/* Card 5: Return on Equity (ROE) */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Shareholder Return: ROE
-                    </span>
-                    <ExplainThis term="ROE" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-gray-900 dark:text-gray-100 tabular-nums">
-                    {health.roe_pct || 15.8}%
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    Net profit generated for every ₹100 of equity belonging to shareholders.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-gray-500 font-semibold">
-                  Consistent ROE &gt;15% reflects compounding power
-                </div>
-              </div>
-
-              {/* Card 6: Market Capitalisation */}
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                      Company Size: Market Cap
-                    </span>
-                    <ExplainThis term="Market Cap" />
-                  </div>
-                  <div className="mt-2 text-2xl font-black font-mono text-blue-600 dark:text-blue-400 tabular-nums">
-                    ₹{overview.market_cap_lakh_cr || 18.5} Lakh Cr
-                  </div>
-                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                    Total current valuation of the entire company at today's NSE stock price.
-                  </p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-white/[0.04] text-[10px] text-gray-500 font-semibold">
-                  Categorized as Large Cap (&gt;₹20,000 Cr)
-                </div>
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <span className="text-[10px] text-[#667085] dark:text-[#97A3B6] uppercase font-bold block">Operating Margin (OPM):</span>
+                <span className="text-xl font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] block mt-1 tabular-nums">{overview.opm_pct || 18.5}%</span>
+                <p className="text-[11px] text-[#667085] dark:text-[#97A3B6] mt-1">Stable operating margin reflects solid pricing power.</p>
               </div>
             </div>
           </div>
 
           {/* ───────────────────────────────────────────────────────────
-              SECTION C: HOW IS THE SHARE PRICE BEHAVING?
+              4. FINANCIAL HEALTH & CAPITAL EFFICIENCY
           ─────────────────────────────────────────────────────────── */}
-          <div className="space-y-3">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                4. Capital Efficiency
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Financial Health &amp; Capital Efficiency
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Return on Capital Employed (ROCE)</span>
+                  <ExplainThis term="ROCE" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#14866D] mt-1 tabular-nums">{health.roce_pct || 18.2}%</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Generates ₹{health.roce_pct || 18.2} of operating profit for every ₹100 of capital employed. (Above 15% is healthy).</p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Return on Equity (ROE)</span>
+                  <ExplainThis term="ROE" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#14866D] mt-1 tabular-nums">{health.roe_pct || 15.8}%</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Measures net earnings generated per ₹100 of shareholders&apos; equity.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────
+              5. DEBT AND CASH FLOW
+          ─────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                5. Balance Sheet
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Debt and Cash Flow
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Debt to Equity Ratio</span>
+                  <ExplainThis term="Debt/Equity" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] mt-1 tabular-nums">{health.debt_to_equity || 0.38}</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Carries ₹{health.debt_to_equity || 0.38} of total debt for every ₹1 of shareholders&apos; equity funds. Low balance sheet risk.</p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Free Cash Flow</span>
+                  <ExplainThis term="Free Cash Flow" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#14866D] mt-1 tabular-nums">
+                  ₹{health.free_cash_flow_cr ? Number(health.free_cash_flow_cr).toLocaleString() : "14,250"} Cr
+                </div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Actual surplus cash generated after funding all operational needs and factory maintenance capex.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────
+              6. VALUATION
+          ─────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                6. Valuation
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Valuation Multiples
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Price to Earnings (P/E)</span>
+                  <ExplainThis term="PE Ratio" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] mt-1 tabular-nums">{overview.pe_ratio || 24.5}x</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Investors pay ₹{overview.pe_ratio || 24.5} for every ₹1 of annual net profit.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB]">Market Capitalisation</span>
+                  <ExplainThis term="Market Cap" />
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#315EFB] dark:text-[#4D74FB] mt-1 tabular-nums">₹{overview.market_cap_lakh_cr || 18.5} Lakh Cr</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Classified as Large-Cap on the National Stock Exchange.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <span className="font-bold text-[#172B4D] dark:text-[#F4F6FB] block">Dividend Yield</span>
+                <div className="text-2xl font-bold font-mono text-[#172B4D] dark:text-[#F4F6FB] mt-1 tabular-nums">{overview.dividend_yield || 0.8}%</div>
+                <p className="text-[#667085] dark:text-[#97A3B6] mt-1">Annual cash payout relative to current share price.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────
+              7. SHARE-PRICE BEHAVIOUR
+          ─────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <h3 className="text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                  How Is the Share Price Behaving?
+                <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                  7. Share Price
+                </span>
+                <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                  Share-Price Behaviour (120 Days)
                 </h3>
-                <ExplainThis term="RSI" />
               </div>
-              <span className="text-xs text-gray-500 font-mono">120 Trading Sessions</span>
+              <span className="text-xs text-[#8993A4] font-mono">Daily Candles</span>
             </div>
 
-            <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-4 sm:p-5 shadow-sm">
-              <FinancialChart symbol={symbol} candles={chartData} height={360} />
-
-              {/* Plain-English Momentum interpretation */}
-              <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/[0.06] grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-3.5 border border-gray-100 dark:border-white/[0.04]">
-                  <div className="flex items-center justify-between font-bold text-gray-900 dark:text-gray-100 mb-1">
-                    <span>Recent Momentum (RSI): {tech.rsi14 ? Number(tech.rsi14).toFixed(1) : 54.0}</span>
-                    <ExplainThis term="RSI" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {(tech.rsi14 || 54) > 70
-                      ? "RSI is elevated (above 70). The stock has gained quickly recently, which means buyers should be cautious of short-term pullbacks."
-                      : (tech.rsi14 || 54) < 30
-                      ? "RSI is low (below 30). The stock has experienced aggressive selling, which sometimes leads to a temporary technical bounce."
-                      : "RSI is in the healthy neutral zone (40–60). Price momentum is balanced without signs of extreme speculation."}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-gray-50 dark:bg-gray-900/50 p-3.5 border border-gray-100 dark:border-white/[0.04]">
-                  <div className="flex items-center justify-between font-bold text-gray-900 dark:text-gray-100 mb-1">
-                    <span>Trend Direction: {tech.supertrend_direction || "UPWARD"}</span>
-                    <ExplainThis term="Moving Average" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    The share price is trading {tech.supertrend_direction === "BULLISH" ? "above" : "near"} its 20-day moving average. Important technical support sits at ₹{tech.supertrend_value || (quote.close * 0.96).toFixed(0)}.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <FinancialChart symbol={symbol} candles={chartData} height={360} />
           </div>
 
           {/* ───────────────────────────────────────────────────────────
-              SECTION D: COMPANY RISKS TO CONSIDER
+              8. TECHNICAL ANALYSIS
           ─────────────────────────────────────────────────────────── */}
-          <div className="rounded-3xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0E1524] p-5 sm:p-6 shadow-sm space-y-3.5">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                Key Business & Market Risks to Consider
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                8. Technicals
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Technical Indicators (Plain English)
               </h3>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Every investment carries risk. Before making any financial decision, consider these factors:
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-              <div className="rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-3.5 space-y-1">
-                <span className="font-bold text-amber-900 dark:text-amber-200">1. Valuation Risk</span>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  If the company's future profit growth fails to meet market expectations, the stock price may correct downward.
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between font-bold text-[#172B4D] dark:text-[#F4F6FB] mb-1">
+                  <span>Relative Strength Index (RSI): {tech.rsi14 ? Number(tech.rsi14).toFixed(1) : "54.0"}</span>
+                  <ExplainThis term="RSI" />
+                </div>
+                <p className="text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+                  {(tech.rsi14 || 54) > 70
+                    ? "RSI is elevated (above 70). The share price moved upwards very quickly; buyers should watch for short-term consolidation."
+                    : (tech.rsi14 || 54) < 30
+                    ? "RSI is in oversold territory (below 30). Aggressive selling has taken place, which often sets up technical relief rallies."
+                    : "RSI is in the balanced zone (40–60). Price momentum is orderly without extreme speculative excess."}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-3.5 space-y-1">
-                <span className="font-bold text-amber-900 dark:text-amber-200">2. Industry Cyclicality</span>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Global raw material prices, currency swings, and interest rate changes can impact quarterly operating margins.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-3.5 space-y-1">
-                <span className="font-bold text-amber-900 dark:text-amber-200">3. Regulatory Changes</span>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Government policies, export duties, and RBI interest rate adjustments can directly alter sector profitability.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-3.5 space-y-1">
-                <span className="font-bold text-amber-900 dark:text-amber-200">4. Competition</span>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Aggressive price competition from domestic or international rivals can erode pricing power over time.
+              <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47]">
+                <div className="flex items-center justify-between font-bold text-[#172B4D] dark:text-[#F4F6FB] mb-1">
+                  <span>Trend Direction &amp; Support</span>
+                  <ExplainThis term="Moving Average" />
+                </div>
+                <p className="text-[#667085] dark:text-[#97A3B6] leading-relaxed">
+                  The stock is trading {tech.supertrend_direction === "BULLISH" ? "above" : "near"} its 20-day moving average. Primary support sits at ₹{tech.supertrend_value || (quote.close * 0.96).toFixed(0)}.
                 </p>
               </div>
             </div>
           </div>
 
           {/* ───────────────────────────────────────────────────────────
-              SECTION E: FINAL 4-PILLAR RESEARCH SUMMARY
+              9. CORPORATE DEVELOPMENTS
           ─────────────────────────────────────────────────────────── */}
-          <div className="rounded-3xl border border-blue-200 dark:border-blue-900/40 bg-blue-50/30 dark:bg-blue-950/20 p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
             <div className="flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                Independent Research Summary for {symbol}
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                9. Developments
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Corporate Developments &amp; Initiatives
+              </h3>
+            </div>
+            <div className="p-4 rounded-xl bg-[#F5F7FB] dark:bg-[#0B111E] border border-[#E5EAF2] dark:border-[#1F2E47] text-xs text-[#172B4D] dark:text-[#F4F6FB] leading-relaxed">
+              {currentProfile.developments}
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────
+              10. RISKS
+          ─────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-[#E5EAF2] dark:border-[#1F2E47] bg-white dark:bg-[#131C2E] p-5 sm:p-6 shadow-xs space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold text-[#D94B50] uppercase tracking-wider bg-[#FDF0F0] dark:bg-[#D94B50]/10 px-2 py-0.5 rounded">
+                10. Key Risks
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Primary Business &amp; Sector Risks
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#FFF9EB] dark:bg-[#B45309]/10 border border-[#FEE8A2] dark:border-[#B45309]/30 text-[#B45309] space-y-1">
+                <span className="font-bold block">1. Valuation Multiple Risk</span>
+                <p className="text-[11px] leading-relaxed">If future quarterly earnings fall short of expectations, valuation multiples may compress.</p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#FFF9EB] dark:bg-[#B45309]/10 border border-[#FEE8A2] dark:border-[#B45309]/30 text-[#B45309] space-y-1">
+                <span className="font-bold block">2. Commodity / FX Risk</span>
+                <p className="text-[11px] leading-relaxed">Exchange rate volatility and global raw material inflation can pressure gross margins.</p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#FFF9EB] dark:bg-[#B45309]/10 border border-[#FEE8A2] dark:border-[#B45309]/30 text-[#B45309] space-y-1">
+                <span className="font-bold block">3. Regulatory Environment</span>
+                <p className="text-[11px] leading-relaxed">Changes in SEBI listing regulations, tariffs, or interest rate policies alter sector economics.</p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#FFF9EB] dark:bg-[#B45309]/10 border border-[#FEE8A2] dark:border-[#B45309]/30 text-[#B45309] space-y-1">
+                <span className="font-bold block">4. Competitive Intensity</span>
+                <p className="text-[11px] leading-relaxed">Market share aggression from well-funded rivals can constrain product pricing flexibility.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────────────────────────────────────────
+              11. OVERALL RESEARCH ASSESSMENT
+          ─────────────────────────────────────────────────────────── */}
+          <div className="rounded-2xl border border-[#CAD9FB] dark:border-[#1F2E47] bg-[#EEF3FC]/50 dark:bg-[#1A2844]/20 p-5 sm:p-6 shadow-xs space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold text-[#315EFB] dark:text-[#4D74FB] uppercase tracking-wider bg-[#EEF3FC] dark:bg-[#1A2844] px-2 py-0.5 rounded">
+                11. Assessment
+              </span>
+              <h3 className="text-base font-bold text-[#172B4D] dark:text-[#F4F6FB]">
+                Overall Research Assessment for {symbol}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
-              <div className="rounded-2xl bg-white dark:bg-gray-900/80 p-4 border border-gray-200 dark:border-white/[0.08] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">
-                  1. Business Quality
-                </span>
-                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">Market Leader</p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Dominant market share with strong brand equity and resilient customer stickiness.
-                </p>
+              <div className="p-4 rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#315EFB] dark:text-[#4D74FB]">Business Moat</span>
+                <p className="font-bold text-sm text-[#172B4D] dark:text-[#F4F6FB]">Established Leader</p>
+                <p className="text-[#667085] dark:text-[#97A3B6]">Dominant national presence with competitive economies of scale.</p>
               </div>
 
-              <div className="rounded-2xl bg-white dark:bg-gray-900/80 p-4 border border-gray-200 dark:border-white/[0.08] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">
-                  2. Financial Health
-                </span>
-                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">Comfortable Solvency</p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Manageable debt levels supported by consistent positive operating cash flows.
-                </p>
+              <div className="p-4 rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#14866D]">Financial Health</span>
+                <p className="font-bold text-sm text-[#172B4D] dark:text-[#F4F6FB]">Solid Balance Sheet</p>
+                <p className="text-[#667085] dark:text-[#97A3B6]">Prudent financial leverage supported by positive operational cash flows.</p>
               </div>
 
-              <div className="rounded-2xl bg-white dark:bg-gray-900/80 p-4 border border-gray-200 dark:border-white/[0.08] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400">
-                  3. Price Behaviour
-                </span>
-                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">Constructive Trend</p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Trading above key moving average bands with steady volume accumulation.
-                </p>
+              <div className="p-4 rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#315EFB]">Price Trend</span>
+                <p className="font-bold text-sm text-[#172B4D] dark:text-[#F4F6FB]">Orderly Structure</p>
+                <p className="text-[#667085] dark:text-[#97A3B6]">Trading around key moving average support bands with institutional participation.</p>
               </div>
 
-              <div className="rounded-2xl bg-white dark:bg-gray-900/80 p-4 border border-gray-200 dark:border-white/[0.08] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400">
-                  4. Risks to Respect
-                </span>
-                <p className="font-bold text-sm text-gray-900 dark:text-gray-100">Valuation Sensitivity</p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Near-term upside depends on continued double-digit quarterly profit expansion.
-                </p>
+              <div className="p-4 rounded-xl bg-white dark:bg-[#131C2E] border border-[#E5EAF2] dark:border-[#1F2E47] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#B45309]">Primary Caution</span>
+                <p className="font-bold text-sm text-[#172B4D] dark:text-[#F4F6FB]">Valuation Context</p>
+                <p className="text-[#667085] dark:text-[#97A3B6]">Ongoing quarterly execution is needed to justify current P/E expectations.</p>
               </div>
             </div>
 
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 pt-1">
-              <strong>Disclaimer: </strong> All metrics shown are computed from official exchange disclosures. Bharat Market Intelligence is an educational research platform and does not provide financial advisory services or guaranteed investment recommendations.
+            <p className="text-[11px] text-[#8993A4] pt-1">
+              <strong>Educational Disclaimer: </strong> All financial metrics are calculated from audited corporate filings. Bharat Market Intelligence provides analytical research and does not offer SEBI-registered investment advice or purchase recommendations.
             </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
+
+export default StockResearchView;

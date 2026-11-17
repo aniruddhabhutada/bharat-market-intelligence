@@ -1,98 +1,134 @@
-# Bharat Market Intelligence — Design System Specification
+# Bharat Market Intelligence — Premium Fintech Design System
 
-**Version:** 2.0 (UX Transformation Edition)  
-**Target:** Indian Equity Research for Retail Investors & Analysts  
-**Guiding Principle:** Complexity is Optional. Clarity is the Default.
-
----
-
-## 1. Core UX Principles
-
-### 1.1 Progressive Disclosure
-Show the simplest, most intuitive explanation first. Allow beginners to understand market direction within 10 seconds without knowing what RSI or MACD means. Reveal quantitative models, institutional cash flows, and technical charts only when the user requests deeper data or switches to **Advanced View**.
-
-### 1.2 Dual Experience Modes
-- **Simple View (Default):**
-  - Plain English summaries ("The 50 major companies rose today").
-  - Intuitive question-based screeners ("Find financially strong companies").
-  - Clickable `ExplainThis` (?) buttons next to all financial metrics.
-  - Generous whitespace, large legible numbers, friendly sector categories.
-- **Advanced View:**
-  - Full candlestick charts with SMA20 and volume bars.
-  - Multi-factor quantitative scoring (Composite, Fundamental, Technical /100).
-  - Microstructure analysis and institutional order flow metrics.
-  - Complete 5-year balance sheet progressions and FII/DII cash ledgers.
-
-### 1.3 Truthful & Neutral Language
-- Never use promotional "Guaranteed Winning Stocks" or unexplained BUY/SELL signals.
-- Always provide both the positive thesis and the primary risk for every research candidate.
-- Real-time or latest verified market status clearly disclosed on every metric.
+**Version:** 3.0 (Premium Fintech Redesign)  
+**Target:** Indian Equity Research for Retail Investors & Financial Analysts  
+**Core Product Philosophy:** Simple to understand. Powerful to explore.
 
 ---
 
-## 2. Color Palette & Theming
+## 1. Product Experience Architecture
 
-The application defaults to a **Clean Light Theme** for welcoming, accessible readability, with full support for an optional **Dark Terminal Theme**.
+The platform delivers a single coherent application with two progressive disclosure tiers:
 
-### 2.1 CSS Variables & Design Tokens
+### 1.1 Simple View (Default for First-Time Visitors)
+- Plain, everyday English without intimidating jargon.
+- Universal 4-part explanations alongside all metrics.
+- Prioritized high-impact market information.
+- Simplified line charts with intuitive ranges.
+- Structured, question-driven stock discovery presets.
+- Clear guidance toward the next useful analytical action.
 
-| Token | Light Theme (Default) | Dark Theme | Purpose |
+### 1.2 Advanced View (Persistent Toggle)
+- Professional candlestick charts with SMA20 and volume profiles.
+- Quantitative multi-factor scoring (Quality, Growth, Momentum, Value).
+- Microstructure analysis and institutional cash flow ledger.
+- Full fundamental valuation ratios, balance sheet metrics, and peer comparisons.
+- Advanced invalidation boundaries and technical breakout conditions.
+
+### 1.3 Persistent Experience Mode Toggle
+- Persistent segmented pill in global header: `[ Simple View | Advanced View ]`
+- Persisted in browser `localStorage (bmi_experience_mode)` across all pages and subsequent sessions.
+- Modifies information hierarchy across every view without duplicating backend business logic.
+
+---
+
+## 2. Visual Identity & Design Tokens
+
+Default Theme: **Clean Light Theme**  
+Optional Theme: **Balanced Contrast Dark Theme**
+
+### 2.1 Color Tokens Specification
+
+| Token Name | Light Theme (Default) | Dark Theme | Purpose / Usage |
 | :--- | :--- | :--- | :--- |
-| `--bg-main` | `#f8fafc` (Slate 50) | `#0b0f19` (Obsidian) | Main viewport canvas |
-| `--bg-card` | `#ffffff` (Pure White) | `#0e1524` (Deep Blue-Gray) | Content cards & panels |
-| `--bg-card-hover` | `#f1f5f9` (Slate 100) | `#162032` | Interactive card hover states |
-| `--border-color` | `#e2e8f0` (Slate 200) | `rgba(255,255,255,0.08)` | Hairline separation lines |
-| `--text-primary` | `#0f172a` (Slate 900) | `#f3f4f6` (Off-white) | Headings, company titles, prices |
-| `--text-secondary` | `#475569` (Slate 600) | `#9ca3af` (Gray 400) | Body paragraphs & explanations |
-| `--text-muted` | `#64748b` (Slate 500) | `#6b7280` | Timestamps, exchange badges |
-| `--accent-blue` | `#2563eb` (Royal Blue) | `#3b82f6` | Primary action buttons & active states |
-| `--market-green` | `#16a34a` (Emerald 600) | `#10b981` (Emerald 400) | Positive price movement & profits |
-| `--market-red` | `#dc2626` (Rose 600) | `#ef4444` (Rose 400) | Negative price movement & risks |
+| **Page Background** | `#F5F7FB` | `#0B111E` | Primary page canvas |
+| **Card Background** | `#FFFFFF` | `#131C2E` | Container cards, panels, dossiers |
+| **Primary Navy** | `#172B4D` | `#F4F6FB` | Primary headings, titles, core text |
+| **Brand Blue** | `#315EFB` | `#4D74FB` | Primary interactive buttons, badges, brand emblems |
+| **Subtle Blue** | `#EEF3FC` | `#1A2844` | Active nav backgrounds, pill badges, selected states |
+| **Positive Movement** | `#14866D` | `#22C55E` | Price appreciation, profit growth, bullish indicators |
+| **Negative Movement** | `#D94B50` | `#F43F5E` | Price declines, losses, risk alerts |
+| **Secondary Text** | `#667085` | `#97A3B6` | Supporting text, body explanations, subtitles |
+| **Border / Hairline** | `#E5EAF2` | `#1F2E47` | Card outlines, dividers, table row borders |
+| **Muted Text** | `#8993A4` | `#6C7A8E` | Timestamps, data status indicators, fine print |
+
+### 2.2 Visual Restraint Principles
+- **No Neon Colors:** Replaced high-saturation neon greens/pinks with calm institutional emerald `#14866D` and rose `#D94B50`.
+- **No Excessive Gradients or Glows:** Eliminated multi-colored radial glows and blur overlays in favor of crisp 1px borders.
+- **No Heavy Dark Terminals by Default:** Pristine `#F5F7FB` canvas creates a welcoming fintech experience similar to Stripe and Linear.
+- **Controlled Radii:** Cards use consistent `rounded-2xl` (16px), controls use `rounded-xl` (12px), badges use `rounded-full`.
 
 ---
 
-## 3. Typography Hierarchy
+## 3. Typography & Numerals
 
-Body text defaults to 15px/16px with comfortable 1.6 line height for effortless readability across mobile and desktop.
+Font Family: **Inter** (`font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`)
+
+### 3.1 Typographic Scale
 
 | Level | Size | Weight | Tracking | Usage |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hero Display** | 28px – 36px | 800 (Extra Bold) | `-0.03em` | Main homepage headline |
-| **Section Title** | 18px – 22px | 700 (Bold) | `-0.02em` | Major module headers |
-| **Card Header** | 14px – 16px | 700 (Bold) | `-0.01em` | Stock symbols, index titles |
-| **Body Text** | 14px – 15px | 400 (Regular) | `normal` | Plain-English explanations & summaries |
-| **Caption & Meta**| 11px – 12px | 500 (Medium) | `normal` | Sub-labels, dates, sources |
-| **Numeric Data** | 14px – 28px | 800 (Mono Bold) | `tabular-nums` | Prices, P/E ratios, percentages, ₹ Cr |
+| **Main Page Heading** | 28px – 32px | 800 (Extra Bold) | `-0.025em` | Hero titles, primary view titles |
+| **Section Heading** | 20px – 22px | 700 (Bold) | `-0.02em` | Section headers (A through G) |
+| **Card Heading** | 16px – 18px | 700 (Bold) | `-0.01em` | Stock symbols, index titles, card topics |
+| **Body Text** | 15px – 16px | 400 (Regular) | `normal` | Plain-English explanations & summaries |
+| **Supporting Text** | 13px – 14px | 400 (Regular) | `normal` | Secondary descriptions, thesis notes, risks |
+| **Caption & Meta** | 11px – 12px | 500 (Medium) | `+0.01em` | Status badges, timestamps, exchange labels |
+
+### 3.2 Tabular Numerals
+All stock prices, P/E multiples, percentages, and financial values enforce:
+```css
+font-variant-numeric: tabular-nums;
+font-feature-settings: "tnum";
+```
+This guarantees alignment across rows and prevents layout shifts during live quote refreshes.
 
 ---
 
-## 4. Reusable Core Components
+## 4. Professional Icon System
 
-### 4.1 `ExplainThis` Component
-A universal accessible tooltip/modal button displayed next to any financial term:
-- **Interaction:** Triggered by click, tap, or keyboard focus (never hover-only).
-- **Structure:**
-  1. *What does it mean?* (Clear 1-sentence definition).
-  2. *Why should you care?* (Relevance to personal investing).
-  3. *How to interpret it?* (Benchmarks, normal ranges, green/red flags).
-  4. *What does it NOT tell us?* (Crucial limitations & caveats).
+**Zero Unicode Emojis:** All decorative emojis have been systematically removed across the entire application (sidebar, navigation, buttons, cards, headings, empty states, and observations).
 
-### 4.2 `ModeToggle` Component
-A clean, prominent segmented pill switch in the header:
-`[ 📖 Simple View | 📊 Advanced View ]`
-Persisted seamlessly in `localStorage (bmi_experience_mode)` across browser visits.
+**Lucide React Consistency:**
+- `Home`: `House`
+- `Market Today`: `ChartNoAxesCombined`
+- `Explore Stocks`: `Search`
+- `Watchlist`: `Bookmark`
+- `Learn`: `GraduationCap`
+- `Stock Analysis`: `BarChart3`
+- `Stock Screener`: `SlidersHorizontal`
+- `Technical Analysis`: `ChartLine`
+- `Fundamental Analysis`: `Scale`
+- `Sector Analysis`: `PieChart`
+- `FII/DII Analysis`: `TrendingUp`
+- `Market Reports`: `FileText`
+- `Portfolio`: `Wallet`
+- `Settings`: `Settings`
+- `Help`: `CircleHelp`
+- `Refresh`: `RefreshCw`
+- `Attribution Heart`: `Heart` (`fill-current text-red-500`)
 
-### 4.3 `OnboardingBanner` Component
-A lightweight, dismissible 3-step introductory banner that greets first-time visitors with clear paths to:
-1. Understand Today's Market
-2. Analyse a Company (e.g. Reliance, TCS)
-3. Discover Stocks by Financial Strength
+Consistent stroke width (1.75px) and sizing (14px–20px) maintained across all views.
 
 ---
 
-## 5. Mobile Ergonomics
+## 5. Reusable Component Specifications
 
-- **Minimum Touch Bounds:** All buttons, pills, and nav tabs meet or exceed the 44px × 44px touch target guideline.
-- **Fixed Floating Bottom Navigation:** 5 key mobile destinations with icons + visible labels:
-  `Home` | `Market` | `Stocks` | `Watchlist` | `More`
-- **Zero Horizontal Overflow:** All tables support smooth native horizontal swipe with `-webkit-overflow-scrolling: touch`.
+1. **`ExplainThis`**: Accessible modal & inline popup providing standardized 4-part explanations:
+   - What does it mean?
+   - Why should you care?
+   - How to interpret it?
+   - What it does NOT tell us?
+2. **`ModeToggle`**: Segmented pill component for 1-click toggling between Simple View and Advanced View.
+3. **`Sidebar`**: Grouped 3-tier desktop navigation (`MAIN`, `RESEARCH`, `PERSONAL`) with clean subtle borders and restrained blue active states.
+4. **`MobileNav`**: 5-item mobile bottom navigation bar (`Home`, `Market`, `Explore`, `Watchlist`, `More`) with accessible 48px touch targets and full slide-up drawer for secondary modules.
+5. **`Header`**: Clean sticky header containing current page title, universal search bar, live market status, data verification badge, experience mode toggle, and static market benchmark strip.
+
+---
+
+## 6. Mobile & Accessibility Standards
+
+- **Target Viewports:** Browser-tested at 390px, 430px, 768px, 1024px, 1366px, and 1440px.
+- **No Horizontal Scroll:** `overflow-x: hidden` enforced on page wrapper with native momentum swipe on wide data tables.
+- **Touch Bounds:** All touch controls meet or exceed 44px × 44px.
+- **WCAG 2.2 AA Contrast:** All text-to-background contrast ratios exceed 4.5:1 for normal text and 3:1 for large text.
